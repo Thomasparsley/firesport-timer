@@ -2,7 +2,13 @@ package main
 
 import (
 	"bytes"
-	"thomasparsley.cz/firesport-timer/bufferTransfare"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
+	"thomasparsley.cz/firesport-timer/dual150"
+	"thomasparsley.cz/firesport-timer/terminal"
 )
 
 const (
@@ -16,6 +22,34 @@ func main() {
 	*/
 	buffer := bytes.NewBufferString(demoRawBuffer)
 
-	s := bufferTransfare.DecodeHexString(buffer.String())
-	println(s)
+	s := dual150.DecodeHexString(buffer.String())
+	sSplit := strings.Split(s, ":")
+
+	terminal.Clear()
+	fmt.Printf("%s\n", sSplit)
+
+	t, err := strconv.Atoi(sSplit[0])
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(time.Date(1, 1, 1, 0, 0, 0, t*1000000, time.Local))
+
+	stringStatus, err := strconv.Atoi(sSplit[1])
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(dual150.GetStatus(stringStatus))
+
+	stringStatusa, err := strconv.Atoi(sSplit[3])
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(dual150.GetStatus(stringStatusa))
+
+	stringStatusb, err := strconv.Atoi(sSplit[5])
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(dual150.GetStatus(stringStatusb))
 }
