@@ -1,0 +1,6 @@
+github.com/buger/goterm v1.0.0 h1:ZB6uUlY8+sjJyFGzz2WpRqX2XYPeXVgtZAOJMwOsTWM=
+github.com/buger/goterm v1.0.0/go.mod h1:16STi3LquiscTIHA8SXUNKEa/Cnu4ZHBH8NsCaWgso0=
+github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07 h1:UyzmZLoiDWMRywV4DUYb9Fbt8uiOSooupjTq10vpvnU=
+github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07/go.mod h1:kDXzergiv9cbyO7IOYJZWg1U88JhDg3PB6klq9Hg2pA=
+golang.org/x/sys v0.0.0-20210331175145-43e1dd70ce54 h1:rF3Ohx8DRyl8h2zw9qojyLHLhrJpEMgyPOImREEryf0=
+golang.org/x/sys v0.0.0-20210331175145-43e1dd70ce54/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
