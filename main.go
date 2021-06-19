@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tarm/serial"
+
 	"thomasparsley.cz/firesport-timer/dual150"
 	"thomasparsley.cz/firesport-timer/terminal"
 )
@@ -52,4 +54,41 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(dual150.GetStatus(stringStatusb))
+
+	bauds := []int{ /* 4800, 9600, 19200, 38400, 57600,  */ 115200 /* , 230400 */}
+
+	for _, baud := range bauds {
+		fmt.Println(baud)
+
+		serialPortConfig := &serial.Config{
+			Name:        "COM4",
+			Baud:        baud,
+			ReadTimeout: time.Second * 5,
+			/* Size:        8, */
+		}
+		sa, err := serial.OpenPort(serialPortConfig)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Port open")
+
+		for i := 0; i < 9900; i++ {
+			_, err = sa.Write([]byte("#APP:cw:data?\n"))
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("Write done")
+
+			buf := make([]byte, 1024)
+			n, _ := sa.Read(buf)
+			fmt.Println("Read done")
+
+			fmt.Printf("%q", buf[:n])
+			fmt.Println()
+		}
+
+		sa.Close()
+		fmt.Println("Port close")
+	}
+
 }
