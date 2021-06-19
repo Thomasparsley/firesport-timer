@@ -1,16 +1,13 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
-	"strconv"
-	"strings"
-	"time"
+	"errors"
 
-	"github.com/tarm/serial"
-
-	"thomasparsley.cz/firesport-timer/dual150"
-	"thomasparsley.cz/firesport-timer/terminal"
+	Fyne "fyne.io/fyne/v2"
+	FyneApp "fyne.io/fyne/v2/app"
+	FyneContainer "fyne.io/fyne/v2/container"
+	FyneDialog "fyne.io/fyne/v2/dialog"
+	FyneWidget "fyne.io/fyne/v2/widget"
 )
 
 const (
@@ -22,7 +19,7 @@ func main() {
 		From string to buffer.
 		This simulate buffer read from timer
 	*/
-	buffer := bytes.NewBufferString(demoRawBuffer)
+	/* buffer := bytes.NewBufferString(demoRawBuffer)
 
 	s := dual150.DecodeHexString(buffer.String())
 	sSplit := strings.Split(s, ":")
@@ -53,9 +50,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(dual150.GetStatus(stringStatusb))
+	fmt.Println(dual150.GetStatus(stringStatusb)) */
 
-	bauds := []int{ /* 4800, 9600, 19200, 38400, 57600,  */ 115200 /* , 230400 */}
+	// 115200
+	/* bauds := []int{ 4800, 9600, 19200, 38400, 57600,  115200 , 230400}
 
 	for _, baud := range bauds {
 		fmt.Println(baud)
@@ -64,7 +62,6 @@ func main() {
 			Name:        "COM4",
 			Baud:        baud,
 			ReadTimeout: time.Second * 5,
-			/* Size:        8, */
 		}
 		sa, err := serial.OpenPort(serialPortConfig)
 		if err != nil {
@@ -89,6 +86,26 @@ func main() {
 
 		sa.Close()
 		fmt.Println("Port close")
-	}
+	} */
 
+	app := FyneApp.New()
+
+	w := app.NewWindow("Časovač | Firesport.cz")
+	w.Resize(Fyne.Size{Width: 800, Height: 480})
+
+	hello := FyneWidget.NewLabel("Hello Fyne!")
+	hellao := FyneWidget.NewLabel("Hello Fyne!a")
+	butt := FyneWidget.NewButton("Hi!", func() {
+		hello.SetText("Welcome :)")
+
+		FyneDialog.ShowError(errors.New("toto jest chyba, lebo jsi kokotko"), w)
+	})
+
+	w.SetContent(FyneContainer.NewVBox(
+		hello,
+		hellao,
+		butt,
+	))
+
+	w.ShowAndRun()
 }
