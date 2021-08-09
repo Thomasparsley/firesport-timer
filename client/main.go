@@ -1,11 +1,14 @@
 package main
 
 const (
-	GUI = bool(true)
+	Dev = bool(true)
 )
 
 func main() {
-	if GUI {
+	if Dev {
+		app := http()
+
+		app.Listen("127.0.0.1:3000")
 	} else {
 		StartConsole()
 	}
