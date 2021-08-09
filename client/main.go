@@ -1,12 +1,11 @@
 package main
 
 const (
-	GUI = false
+	GUI = bool(true)
 )
 
 func main() {
 	if GUI {
-		StartGui()
 	} else {
 		StartConsole()
 	}

@@ -91,3 +91,29 @@ func StartConsole() {
 		fmt.Println("Port close")
 	}
 }
+
+/*
+	Read line from serial port
+*/
+func ReadLine(sa *Serial.Port) (string, error) {
+	var (
+		buf       []byte
+		bufString string
+	)
+
+	for {
+		buf = make([]byte, 1024)
+		n, err := sa.Read(buf)
+		if err != nil {
+			return "", err
+		}
+
+		if n > 0 {
+			bufString += string(buf[:n])
+
+			if strings.HasSuffix(bufString, "\n") {
+				return bufString, nil
+			}
+		}
+	}
+}
