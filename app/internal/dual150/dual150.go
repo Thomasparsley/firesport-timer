@@ -4,13 +4,7 @@ import (
 	"encoding/hex"
 )
 
-type status struct {
-	id   int
-	name string
-}
-
-// DecodeHexString
-// decode hex string to UTF-8 string
+// Decode hex string to UTF-8 string
 func DecodeHexString(s string) string {
 	byteString, err := hex.DecodeString(s)
 	if err != nil {
@@ -20,27 +14,32 @@ func DecodeHexString(s string) string {
 	return string(byteString)[2:]
 }
 
-func GetStatus(s int) status {
+type Status struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func GetStatus(s int) Status {
 	switch s {
 	case 1:
-		return status{
-			id:   1,
-			name: "default",
+		return Status{
+			Id:   1,
+			Name: "default",
 		}
 	case 2:
-		return status{
-			id:   2,
-			name: "run",
+		return Status{
+			Id:   2,
+			Name: "run",
 		}
 	case 8:
-		return status{
-			id:   8,
-			name: "stop",
+		return Status{
+			Id:   8,
+			Name: "stop",
 		}
 	default:
-		return status{
-			id:   0,
-			name: "undefinet",
+		return Status{
+			Id:   0,
+			Name: "undefined",
 		}
 	}
 }

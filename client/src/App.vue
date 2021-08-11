@@ -34,7 +34,14 @@ const liveTimer = reactive({
 });
 
 if (appAddress && appPort) {
-	const socket = new WebSocket(`ws://${appAddress}:${appPort}/api/timer`);
+	const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
+
+	// read from socket and update the timer display
+	socket.onmessage = (event) => {
+		const data = JSON.parse(event.data);
+		liveTimer.left = data.left;
+		liveTimer.right = data.right;
+	};
 }
 </script>
 

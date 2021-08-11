@@ -8,9 +8,9 @@ import (
 	"time"
 
 	Serial "github.com/tarm/serial"
-	"thomasparsley.cz/firesport-timer/app/internal/dual150"
-	"thomasparsley.cz/firesport-timer/app/internal/terminal"
-	"thomasparsley.cz/firesport-timer/app/pkg/serial"
+	"thomasparsley.cz/firesport-timer/internal/dual150"
+	"thomasparsley.cz/firesport-timer/internal/terminal"
+	"thomasparsley.cz/firesport-timer/pkg/serial"
 )
 
 const (
