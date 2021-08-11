@@ -10,14 +10,15 @@ import (
 )
 
 const (
-	Dev = bool(false)
+	Dev = bool(true)
 )
 
 func main() {
 	if Dev {
-		app := http()
+		StartConsole()
+		/* app := http()
 
-		app.Listen("127.0.0.1:3000")
+		app.Listen("127.0.0.1:3000") */
 	} else {
 		if err := ui.Init(); err != nil {
 			log.Fatalf("failed to initialize termui: %v", err)
