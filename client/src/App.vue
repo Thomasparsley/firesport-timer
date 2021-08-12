@@ -36,11 +36,13 @@ const liveTimer = reactive({
 if (appAddress && appPort) {
 	const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
 
+
 	// read from socket and update the timer display
 	socket.onmessage = (event) => {
 		const data = JSON.parse(event.data);
+    
 
-		if (data.countdown && data.countdown != "00:00.000") {
+		if (data.lineOne && data.lineOne == "00:00.000" && data.lineTwo && data.lineTwo == "00:00.000") {
 			liveTimer.left = data.countdown;
 			liveTimer.right = data.countdown;
 		} else {

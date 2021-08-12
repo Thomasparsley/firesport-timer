@@ -10,7 +10,7 @@ import (
 	"thomasparsley.cz/firesport-timer/internal/kocab"
 )
 
-func Socket(app *fiber.App, errorChan chan string) {
+func Socket(app *fiber.App, errorChan chan string, dualChan chan kocab.Dual150) {
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) { // Returns true if the client requested upgrade to the WebSocket protocol
 			return c.Next()
@@ -19,13 +19,9 @@ func Socket(app *fiber.App, errorChan chan string) {
 	})
 
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
+		dual := kocab.Dual150{}.New()
 		for {
-
-			dual, err := kocab.Dual150{}.ParseRawData("2:300000:1:0:1:0:1:0:1:0:0:0:0:1")
-			if err != nil {
-				errorChan <- fmt.Sprintf("Error: %s", err)
-				break
-			}
+			dual = <-dualChan
 
 			toSend := map[string]interface{}{
 				"countdown": kocab.FormatTime(dual.Countdown.Time),
