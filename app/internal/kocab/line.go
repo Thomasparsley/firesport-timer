@@ -45,7 +45,7 @@ func (Line) CountdownParse(rawTime string) (Line, error) {
 
 func (Line) SetDefault() Line {
 	return Line{
-		Time:   time.Date(1, 1, 1, 0, 0, 0, 0*1000000, time.Local),
+		Time:   time.Date(1679, 1, 1, 0, 0, 0, 0, time.Local),
 		Status: Status{}.GetByID(StatusDefaultID),
 	}
 }
