@@ -1,16 +1,14 @@
 package routes
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 )
 
-func Homepage(app *fiber.App, appVersion string) {
+func Homepage(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
 
-		return c.SendString(fmt.Sprintf(`
+		return c.SendString(`
 			<!DOCTYPE html>
 			<html lang="cs">
 
@@ -27,12 +25,12 @@ func Homepage(app *fiber.App, appVersion string) {
 				<title>Firesport Timer</title>
 			</head>
 
-			<body data-app-version="%s">
+			<body>
 				<div id="app"></div>
 
 				<script src="https://thomasparsley.cz/firesport-timer/index.js"></script>
 			</body>
 			</html>
-		`, appVersion))
+		`)
 	})
 }

@@ -7,7 +7,8 @@ import (
 	"thomasparsley.cz/firesport-timer/routes"
 )
 
-func initRoutes(app *fiber.App, errorChan chan string, appVersion string, dualChan chan kocab.Dual150) {
-	routes.Homepage(app, appVersion)
+func initRoutes(app *fiber.App, errorChan chan string, dualChan chan kocab.Dual150) {
+	routes.Homepage(app)
 	routes.Socket(app, errorChan, dualChan)
+
 }

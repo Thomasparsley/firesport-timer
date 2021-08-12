@@ -6,13 +6,14 @@ import (
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
+	"github.com/gofiber/fiber/v2"
 	Serial "github.com/tarm/serial"
 	"thomasparsley.cz/firesport-timer/internal/kocab"
 	"thomasparsley.cz/firesport-timer/internal/terminal"
 )
 
 const (
-	appVersion = string("1.0.1")
+	// appVersion = string("1.0.1")
 
 	Dev = bool(false)
 
@@ -56,6 +57,7 @@ func main() {
 		author.Text = "https://thomasparsley.cz/"
 		author.SetRect(49, 0, 100, 3)
 
+		startReader := make(chan bool)
 		closeReader := make(chan bool)
 		dualChan := make(chan kocab.Dual150, 2)
 		dual := kocab.Dual150{}.New()
@@ -159,56 +161,23 @@ func main() {
 
 		// Start HTTP server
 		go func() {
-			app := http(errorChan, appVersion, dualChan)
+			app := http(errorChan, dualChan)
+
+			app.Post("/startreader", func(c *fiber.Ctx) error {
+				startReader <- true
+				return c.SendStatus(200)
+			})
+
+			app.Post("/closereader", func(c *fiber.Ctx) error {
+				closeReader <- true
+				return c.SendStatus(200)
+			})
 
 			link := "127.0.0.1:3000"
 			httpLinkChan <- "http://" + link + "/"
 			app.Listen(link)
 		}()
 		httpLink = <-httpLinkChan
-
-		// Start serial reader
-		go func() {
-			serialPortConfig := &Serial.Config{
-				Name:        "COM4",
-				Baud:        115200,
-				ReadTimeout: time.Second * 5,
-			}
-
-			sa, err := Serial.OpenPort(serialPortConfig)
-			if err != nil {
-				panic(err)
-			}
-
-			close := false
-			for {
-				output, _ := ReadLine(sa, "#APP:cw:data?")
-
-				d, err := kocab.Dual150{}.ParseRawData(output)
-				if err != nil {
-					errorChan <- err.Error()
-					continue
-				}
-
-				dualChan <- d
-
-				time.Sleep(time.Second / 12)
-
-				select {
-				case v, ok := <-closeReader:
-					if ok {
-						close = v
-					}
-				default:
-				}
-
-				if close {
-					break
-				}
-			}
-
-			sa.Close()
-		}()
 
 		terminal.Clear()
 		draw()
@@ -238,7 +207,60 @@ func main() {
 				if tickerCount%24 == 0 {
 					tickerCount = 0
 				}
+
+				// Start serial port
+				select {
+				case v, ok := <-startReader:
+					if ok && v {
+						go startSerialReader("COM4", errorChan, dualChan, closeReader)
+						startReader <- false
+					}
+				default:
+				}
 			}
 		}
 	}
+}
+
+func startSerialReader(serialPortName string, errorChan chan string, dualChan chan kocab.Dual150, closeReader chan bool) {
+	serialPortConfig := &Serial.Config{
+		Name:        serialPortName, //"COM4",
+		Baud:        115200,
+		ReadTimeout: time.Second * 5,
+	}
+
+	sa, err := Serial.OpenPort(serialPortConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	close := false
+	for {
+		output, _ := ReadLine(sa, "#APP:cw:data?")
+
+		d, err := kocab.Dual150{}.ParseRawData(output)
+		if err != nil {
+			errorChan <- err.Error()
+			continue
+		}
+
+		dualChan <- d
+
+		time.Sleep(time.Second / 12)
+
+		select {
+		case v, ok := <-closeReader:
+			if ok && v {
+				close = v
+				closeReader <- false
+			}
+		default:
+		}
+
+		if close {
+			break
+		}
+	}
+
+	sa.Close()
 }

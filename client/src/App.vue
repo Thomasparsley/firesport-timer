@@ -33,16 +33,21 @@ const liveTimer = reactive({
 	right: "00:00.000",
 });
 
+const isTimerRunning = reactive(false);
+
 if (appAddress && appPort) {
 	const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
-
 
 	// read from socket and update the timer display
 	socket.onmessage = (event) => {
 		const data = JSON.parse(event.data);
-    
 
-		if (data.lineOne && data.lineOne == "00:00.000" && data.lineTwo && data.lineTwo == "00:00.000") {
+		if (
+			data.lineOne &&
+			data.lineOne == "00:00.000" &&
+			data.lineTwo &&
+			data.lineTwo == "00:00.000"
+		) {
 			liveTimer.left = data.countdown;
 			liveTimer.right = data.countdown;
 		} else {
@@ -59,6 +64,11 @@ if (appAddress && appPort) {
 	<div>
 		<TimerDisplay position="L" :time="liveTimer.left" />
 		<TimerDisplay position="R" :time="liveTimer.right" />
+	</div>
+
+	<div>
+		<button v>Začít snímat časomíru</button>
+		<button>Ukončit snímání časomíry</button>
 	</div>
 
 	<Footer :client="clieantVersion" :app="appVersion" />
