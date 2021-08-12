@@ -11,12 +11,12 @@ import { reactive } from "vue";
 
 const bodyDataset = document.body.dataset;
 
-const clieantVersion = "1.0.0";
+const clieantVersion = "0.5.0";
 const appVersion = bodyDataset.appVersion || "X.X.X";
 const appAddress = bodyDataset.appAddress || "127.0.0.1";
 const appPort = bodyDataset.appPort || "3000";
 
-const latestAppVersion = "1.0.0";
+const latestAppVersion = "1.0.1";
 const isUpdateAvailable = appVersion !== latestAppVersion;
 
 console.log({
@@ -29,8 +29,8 @@ console.log({
 });
 
 const liveTimer = reactive({
-	left: "00:00:00",
-	right: "00:00:00",
+	left: "00:00.000",
+	right: "00:00.000",
 });
 
 if (appAddress && appPort) {
@@ -39,8 +39,14 @@ if (appAddress && appPort) {
 	// read from socket and update the timer display
 	socket.onmessage = (event) => {
 		const data = JSON.parse(event.data);
-		liveTimer.left = data.left;
-		liveTimer.right = data.right;
+
+		if (data.countdown && data.countdown != "00:00.000") {
+			liveTimer.left = data.countdown;
+			liveTimer.right = data.countdown;
+		} else {
+			liveTimer.left = data.lineOne;
+			liveTimer.right = data.lineTwo;
+		}
 	};
 }
 </script>

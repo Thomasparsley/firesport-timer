@@ -6,7 +6,7 @@ import (
 	"thomasparsley.cz/firesport-timer/routes"
 )
 
-func initRoutes(app *fiber.App) {
-	routes.Homepage(app)
-	routes.Socket(app)
+func initRoutes(app *fiber.App, errorChan chan string, appVersion string) {
+	routes.Homepage(app, appVersion)
+	routes.Socket(app, errorChan)
 }

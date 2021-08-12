@@ -11,6 +11,8 @@ import (
 )
 
 const (
+	appVersion = string("1.0.1")
+
 	Dev = bool(false)
 
 	pressToQuitApp   = string("ZMÁČKNĚTĚ `q` PRO UKONČENÍ APLIKACE")
@@ -38,8 +40,8 @@ func main() {
 		tickerCount++
 		ticker := time.NewTicker(time.Second / 24).C
 
-		/* httpQuit := make(chan bool) */
 		httpLinkChan := make(chan string)
+		errorChan := make(chan string, 10)
 		var httpLink string
 
 		title := widgets.NewParagraph()
@@ -53,7 +55,7 @@ func main() {
 		author.SetRect(49, 0, 100, 3)
 
 		/* dual := kocab.Dual150{}.New() */
-		dual, err := kocab.Dual150{}.ParseRawData("2:0:4:5390:8:18070:2:0:1:0:0:0:0:2")
+		dual, err := kocab.Dual150{}.ParseRawData("2:300000:1:0:1:0:1:0:1:0:0:0:0:1")
 		if err != nil {
 			panic(err)
 		}
@@ -61,7 +63,7 @@ func main() {
 		// Countdown
 		countdown := widgets.NewParagraph()
 		countdown.Title = " Odpočet: "
-		countdown.Text = kocab.FormatTime(time.Now())
+		countdown.Text = kocab.FormatTime(dual.Countdown.Time)
 		countdown.SetRect(0, 4, 40, 7)
 
 		// Line one -- Left
@@ -124,12 +126,20 @@ func main() {
 
 			httpLinkUI.Text = httpLink
 
+			select {
+			case v, ok := <-errorChan:
+				if ok {
+					errorMessage.Text = v
+				}
+			default:
+			}
+
 			ui.Render(errorMessage, title, author, countdown, lineOne, lineTwo, lineThree, lineFour, httpLinkUI, quit, actualTime)
 		}
 
 		// Start HTTP server
 		go func() {
-			app := http()
+			app := http(errorChan, appVersion)
 
 			link := "127.0.0.1:3000"
 			httpLinkChan <- "http://" + link + "/"

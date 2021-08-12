@@ -1,25 +1,16 @@
 package routes
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	websocket "github.com/gofiber/websocket/v2"
-	"thomasparsley.cz/firesport-timer/internal/dual150"
+	"thomasparsley.cz/firesport-timer/internal/kocab"
 )
 
-const (
-	demoRawBuffer = "323a393133303a383a343432303a383a393133303a383a303a313a303a303a303a303a380d"
-)
-
-type timer struct {
-	Left        time.Time      `json:"left"`
-	LeftStatus  dual150.Status `json:"leftStatus"`
-	Right       time.Time      `json:"right"`
-	RightStatus dual150.Status `json:"rightStatus"`
-}
-
-func Socket(app *fiber.App) {
+func Socket(app *fiber.App, errorChan chan string) {
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) { // Returns true if the client requested upgrade to the WebSocket protocol
 			return c.Next()
@@ -27,55 +18,36 @@ func Socket(app *fiber.App) {
 		return c.SendStatus(fiber.StatusUpgradeRequired)
 	})
 
-	/* app.Get("/ws", websocket.New(func(c *websocket.Conn) {
-		fmt.Println(c.Locals("Host"))
-
+	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		for {
-			buffer := bytes.NewBufferString(demoRawBuffer)
 
-			s := dual150.DecodeHexString(buffer.String())
-
-			sSplit := strings.Split(s, ":")
-
-			t, err := strconv.Atoi(sSplit[0])
+			dual, err := kocab.Dual150{}.ParseRawData("2:300000:1:0:1:0:1:0:1:0:0:0:0:1")
 			if err != nil {
-				panic(err)
-			}
-
-			tt := time.Date(1, 1, 1, 0, 0, 0, t*1000000, time.Local)
-
-			stringStatusa, err := strconv.Atoi(sSplit[3])
-			if err != nil {
-				panic(err)
-			}
-
-			stringStatusb, err := strconv.Atoi(sSplit[5])
-			if err != nil {
-				panic(err)
-			}
-
-			tim := timer{
-				Left:        "tt",
-				LeftStatus:  dual150.GetStatus(stringStatusa),
-				Right:       "tt",
-				RightStatus: dual150.GetStatus(stringStatusb),
-			}
-
-			b, err := json.Marshal(tim)
-			if err != nil {
-				fmt.Printf("Error: %s", err)
+				errorChan <- fmt.Sprintf("Error: %s", err)
 				break
 			}
 
-			fmt.Println(string(b))
+			toSend := map[string]interface{}{
+				"countdown": kocab.FormatTime(dual.Countdown.Time),
+				"lineOne":   kocab.FormatTime(dual.LineOne.Time),
+				"lineTwo":   kocab.FormatTime(dual.LineTwo.Time),
+				"lineThree": kocab.FormatTime(dual.LineThree.Time),
+				"lineFour":  kocab.FormatTime(dual.LineFour.Time),
+			}
+
+			b, err := json.Marshal(toSend)
+			if err != nil {
+				errorChan <- fmt.Sprintf("Error: %s", err)
+				break
+			}
 
 			err = c.WriteMessage(websocket.TextMessage, b)
 			if err != nil {
-				log.Println("read:", err)
+				errorChan <- fmt.Sprintf("Error: %s", err)
 				break
 			}
 
-			time.Sleep(time.Second / 10)
+			time.Sleep(time.Second / 15)
 		}
-	})) */
+	}))
 }
