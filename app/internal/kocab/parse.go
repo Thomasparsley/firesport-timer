@@ -9,20 +9,20 @@ import (
 
 /*
 	2:0:1:0:1:0:1:0:1:0:0:0:0:1
-	Neutrální stav
+	Neutral state
 
 	2:0:4:6270:2:6270:2:0:1:0:0:0:0:2
-	Levý a pravý terč běží
+	Left and right target running
 
 	2:0:8:32010:8:29470:8:0:1:0:0:0:0:8
-	Finále
-	Levý terč je výsledný čas
+	Final
+	The left target is the resulting time
 
 	2:0:4:5390:8:18070:2:0:1:0:0:0:0:2
-	Běží pouze pravý terč, levý terč je sražen
+	Only the right target runs, the left target is knocked down
 
 	2:300000:1:0:1:0:1:0:1:0:0:0:0:1
-	Odpočet
+	Countdown
 */
 
 func parseRawTimeToTime(rawTime string) (time.Time, error) {
