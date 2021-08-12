@@ -31,6 +31,16 @@ type Dual150 struct {
 	Countdown
 */
 
+func (Dual150) New() Dual150 {
+	return Dual150{
+		Countdown: Line{}.SetDefault(),
+		LineOne:   Line{}.SetDefault(),
+		LineTwo:   Line{}.SetDefault(),
+		LineThree: Line{}.SetDefault(),
+		LineFour:  Line{}.SetDefault(),
+	}
+}
+
 func (Dual150) ParseRawData(rawData string) (Dual150, error) {
 	if len(rawData) < 2 {
 		return Dual150{}, errors.New("invalid rawData input")
