@@ -111,7 +111,7 @@ func ReadLine(sa *Serial.Port, write string) (string, error) {
 	for {
 		_, err := serial.WriteLine(sa, write)
 		if err != nil {
-			panic(err)
+			return "", err
 		}
 
 		buf = make([]byte, 1024)

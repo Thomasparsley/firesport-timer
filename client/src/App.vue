@@ -1,6 +1,4 @@
 <script setup>
-import Update from "./components/Update.vue";
-
 import TimerDisplay from "./components/TimerDisplay.vue";
 import Footer from "./components/Footer.vue";
 
@@ -11,21 +9,14 @@ import { reactive } from "vue";
 
 const bodyDataset = document.body.dataset;
 
-const clieantVersion = "0.5.0";
 const appVersion = bodyDataset.appVersion || "X.X.X";
 const appAddress = bodyDataset.appAddress || "127.0.0.1";
 const appPort = bodyDataset.appPort || "3000";
-
-const latestAppVersion = "1.0.1";
-const isUpdateAvailable = appVersion !== latestAppVersion;
 
 console.log({
 	appAddress,
 	appPort,
 	appVersion,
-	clieantVersion,
-	latestAppVersion,
-	isUpdateAvailable,
 });
 
 const liveTimer = reactive({
@@ -33,7 +24,11 @@ const liveTimer = reactive({
 	right: "00:00.000",
 });
 
-const isTimerRunning = reactive(false);
+const timer = reactive({
+	isConnected: true,
+	isRunning: false,
+	portName: "",
+});
 
 if (appAddress && appPort) {
 	const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
@@ -55,23 +50,79 @@ if (appAddress && appPort) {
 			liveTimer.right = data.lineTwo;
 		}
 	};
+
+	socket.onopen = () => {
+		timer.isConnected = true;
+	};
+
+	socket.onerror = (event) => {
+		console.log("Socket error: ", event);
+	};
+
+	socket.onclose = (event) => {
+		timer.isConnected = false;
+	};
+}
+
+function startCloseTimer() {
+	if (timer.isRunning) {
+		timer.isRunning = false;
+	} else {
+		if (!timer.isConnected || timer.portName == "") {
+			return;
+		}
+
+		fetch("http://127.0.0.1:3000/api/start", {
+			method: "POST",
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				port: timer.portName,
+			}),
+		});
+
+		timer.isRunning = true;
+	}
+}
+
+function resetTimer() {
+	if (timer.isConnected && timer.isRunning) {
+		fetch("http://127.0.0.1:3000/api/reset", {
+			method: "POST",
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 }
 </script>
 
 <template>
-	<Update v-if="isUpdateAvailable" />
-
-	<div>
+	<div class="timerGrid">
 		<TimerDisplay position="L" :time="liveTimer.left" />
 		<TimerDisplay position="R" :time="liveTimer.right" />
 	</div>
 
-	<div>
-		<button v>Začít snímat časomíru</button>
-		<button>Ukončit snímání časomíry</button>
+	<div class="buttonGrid" v-if="timer.isConnected">
+		<button v-if="!timer.isRunning" @click="startCloseTimer">
+			Začít snímat časomíru
+		</button>
+		<button v-else @click="startCloseTimer">
+			Ukončit snímání časomíry
+		</button>
+
+		<button v-if="timer.isRunning">Reset</button>
+
+		<label>
+			<p>Název portu</p>
+			<input type="text" v-model="timer.portName" placeholder="COM4" />
+		</label>
 	</div>
 
-	<Footer :client="clieantVersion" :app="appVersion" />
+	<Footer :app="appVersion" />
 </template>
 
 <style>
@@ -86,5 +137,30 @@ body {
 	color: #2c3e50;
 
 	position: relative;
+}
+
+.timerGrid,
+.buttonGrid {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.timerGrid {
+	gap: 3.5rem;
+}
+
+.buttonGrid {
+	gap: 1rem;
+}
+
+button {
+	font-size: 1.25rem;
+}
+
+label p {
+	margin: 0;
 }
 </style>

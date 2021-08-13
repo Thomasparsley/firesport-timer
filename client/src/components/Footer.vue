@@ -2,7 +2,6 @@
 import { defineProps } from "vue";
 
 defineProps({
-	client: String,
 	app: String,
 });
 </script>
@@ -10,8 +9,6 @@ defineProps({
 <template>
 	<footer>
 		<div>
-			<span>Verze klienta: V{{ client }}</span>
-			|
 			<span>Verze aplikace: V{{ app }}</span>
 		</div>
 

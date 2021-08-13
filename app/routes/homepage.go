@@ -1,14 +1,23 @@
 package routes
 
 import (
+	_ "embed"
+	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 )
+
+//go:embed index.js
+var js string
+
+//go:embed index.css
+var css string
 
 func Homepage(app *fiber.App) {
 	app.Get("/", func(c *fiber.Ctx) error {
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
 
-		return c.SendString(`
+		return c.SendString(fmt.Sprintf(`
 			<!DOCTYPE html>
 			<html lang="cs">
 
@@ -25,12 +34,13 @@ func Homepage(app *fiber.App) {
 				<title>Firesport Timer</title>
 			</head>
 
-			<body>
+			<body data-app-version="1.0.1" data-app-address="127.0.0.1" data-app-port="3000">
 				<div id="app"></div>
 
-				<script src="https://thomasparsley.cz/firesport-timer/index.js"></script>
+				<style>%s</style>
+				<script>%s</script>
 			</body>
 			</html>
-		`)
+		`, css, js))
 	})
 }
