@@ -5,11 +5,11 @@ import (
 	"thomasparsley.cz/firesport-timer/internal/kocab"
 )
 
-func http(errorChan chan string, dualChan chan kocab.Dual150) *fiber.App {
+func http(errorChan chan string, dual150 *kocab.Dual150) *fiber.App {
 	app := fiber.New()
 
 	initMiddleware(app)
-	initRoutes(app, errorChan, dualChan)
+	initRoutes(app, errorChan, dual150)
 
 	return app
 }

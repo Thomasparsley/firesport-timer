@@ -187,7 +187,7 @@ func main() {
 
 		// Start HTTP server
 		go func() {
-			app := http(errorChan, dual150Chan)
+			app := http(errorChan, &dual150)
 
 			app.Post("/api/start", func(c *fiber.Ctx) error {
 				var port portNameHttp
@@ -200,8 +200,8 @@ func main() {
 					return c.SendStatus(500)
 				}
 
-				startReader <- true
 				portName = port.Port
+				startReader <- true
 				return c.SendStatus(200)
 			})
 

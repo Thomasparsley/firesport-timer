@@ -66,13 +66,21 @@ if (appAddress && appPort) {
 
 function startCloseTimer() {
 	if (timer.isRunning) {
+        fetch("/api/close", {
+			method: "POST",
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
 		timer.isRunning = false;
 	} else {
 		if (!timer.isConnected || timer.portName == "") {
 			return;
 		}
 
-		fetch("http://127.0.0.1:3000/api/start", {
+		fetch("/api/start", {
 			method: "POST",
 			credentials: "same-origin",
 			headers: {
@@ -89,7 +97,7 @@ function startCloseTimer() {
 
 function resetTimer() {
 	if (timer.isConnected && timer.isRunning) {
-		fetch("http://127.0.0.1:3000/api/reset", {
+		fetch("/api/reset", {
 			method: "POST",
 			credentials: "same-origin",
 			headers: {
@@ -114,7 +122,7 @@ function resetTimer() {
 			Ukončit snímání časomíry
 		</button>
 
-		<button v-if="timer.isRunning">Reset</button>
+		<button v-if="timer.isRunning" @click="resetTimer">Resetovat čas na časomíře</button>
 
 		<label>
 			<p>Název portu</p>
