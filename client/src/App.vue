@@ -13,162 +13,122 @@ const appVersion = bodyDataset.appVersion || "X.X.X";
 const appAddress = bodyDataset.appAddress || "127.0.0.1";
 const appPort = bodyDataset.appPort || "3000";
 
-console.log({
-	appAddress,
-	appPort,
-	appVersion,
-});
-
 const liveTimer = reactive({
-	left: "00:00.000",
-	right: "00:00.000",
+  left: "00:00.000",
+  right: "00:00.000",
 });
 
-const timer = reactive({
-	isConnected: true,
-	isRunning: false,
-	portName: "",
+const settings = reactive({
+  isConnected: true,
+  isRunning: false,
+  portName: "",
+  lines: {
+    oneOn: true,
+    twoOn: true,
+    threeOn: false,
+    fourOn: false,
+  },
 });
 
 if (appAddress && appPort) {
-	const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
+  const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
 
-	// read from socket and update the timer display
-	socket.onmessage = (event) => {
-		const data = JSON.parse(event.data);
+  // read from socket and update the timer display
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
 
-		if (
-			data.lineOne &&
-			data.lineOne == "00:00.000" &&
-			data.lineTwo &&
-			data.lineTwo == "00:00.000"
-		) {
-			liveTimer.left = data.countdown;
-			liveTimer.right = data.countdown;
-		} else {
-			liveTimer.left = data.lineOne;
-			liveTimer.right = data.lineTwo;
-		}
-	};
+    if (
+      data.lineOne &&
+      data.lineOne == "00:00.000" &&
+      data.lineTwo &&
+      data.lineTwo == "00:00.000"
+    ) {
+      liveTimer.left = data.countdown;
+      liveTimer.right = data.countdown;
+    } else {
+      liveTimer.left = data.lineOne;
+      liveTimer.right = data.lineTwo;
+    }
+  };
 
-	socket.onopen = () => {
-		timer.isConnected = true;
-	};
+  socket.onopen = () => {
+    settings.isConnected = true;
+  };
 
-	socket.onerror = (event) => {
-		console.log("Socket error: ", event);
-	};
+  socket.onerror = (event) => {
+    console.log("Socket error: ", event);
+  };
 
-	socket.onclose = (event) => {
-		timer.isConnected = false;
-	};
+  socket.onclose = (event) => {
+    settings.isConnected = false;
+  };
 }
 
 function startCloseTimer() {
-	if (timer.isRunning) {
-        fetch("/api/close", {
-			method: "POST",
-			credentials: "same-origin",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
+  if (settings.isRunning) {
+    fetch("/api/close", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-		timer.isRunning = false;
-	} else {
-		if (!timer.isConnected || timer.portName == "") {
-			return;
-		}
+    settings.isRunning = false;
+  } else {
+    if (!settings.isConnected || settings.portName == "") {
+      return;
+    }
 
-		fetch("/api/start", {
-			method: "POST",
-			credentials: "same-origin",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				port: timer.portName,
-			}),
-		});
+    fetch("/api/start", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        port: settings.portName,
+      }),
+    });
 
-		timer.isRunning = true;
-	}
+    settings.isRunning = true;
+  }
 }
 
 function resetTimer() {
-	if (timer.isConnected && timer.isRunning) {
-		fetch("/api/reset", {
-			method: "POST",
-			credentials: "same-origin",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-	}
+  if (settings.isConnected && settings.isRunning) {
+    fetch("/api/reset", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
 }
 </script>
 
 <template>
-	<div class="timerGrid">
-		<TimerDisplay position="L" :time="liveTimer.left" />
-		<TimerDisplay position="R" :time="liveTimer.right" />
-	</div>
-
-	<div class="buttonGrid" v-if="timer.isConnected">
-		<button v-if="!timer.isRunning" @click="startCloseTimer">
-			Začít snímat časomíru
-		</button>
-		<button v-else @click="startCloseTimer">
-			Ukončit snímání časomíry
-		</button>
-
-		<button v-if="timer.isRunning" @click="resetTimer">Resetovat čas na časomíře</button>
-
-		<label>
-			<p>Název portu</p>
-			<input type="text" v-model="timer.portName" placeholder="COM4" />
-		</label>
-	</div>
-
-	<Footer :app="appVersion" />
+  <Footer :app="appVersion" />
 </template>
 
-<style>
+<style lang="scss">
 body {
-	margin: 0;
+  margin: 0;
+  background-color: #f0f0f0;
 }
 
 #app {
-	font-family: Avenir, Helvetica, Arial, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	color: #2c3e50;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
-	position: relative;
+  position: relative;
 }
 
-.timerGrid,
-.buttonGrid {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-	flex-wrap: wrap;
-}
-
-.timerGrid {
-	gap: 3.5rem;
-}
-
-.buttonGrid {
-	gap: 1rem;
-}
-
-button {
-	font-size: 1.25rem;
-}
-
-label p {
-	margin: 0;
+.wrapper {
+  max-width: 70vmax;
+  width: 100%;
+  margin: auto;
 }
 </style>
