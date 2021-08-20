@@ -1,114 +1,98 @@
-<script setup>
-import TimerDisplay from "./components/TimerDisplay.vue";
+<script>
+import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
 
-import { reactive } from "vue";
-
-// This starter template is using Vue 3 experimental <script setup> SFCs
-// Check out https://github.com/vuejs/rfcs/blob/master/active-rfcs/0040-script-setup.md
+import HomePage from "./pages/Home.vue";
+import Settings from "./pages/Settings.vue";
 
 const bodyDataset = document.body.dataset;
 
-const appVersion = bodyDataset.appVersion || "X.X.X";
-const appAddress = bodyDataset.appAddress || "127.0.0.1";
-const appPort = bodyDataset.appPort || "3000";
+export default {
+  name: "App",
+  components: {
+    Header,
+    Footer,
 
-const liveTimer = reactive({
-  left: "00:00.000",
-  right: "00:00.000",
-});
-
-const settings = reactive({
-  isConnected: true,
-  isRunning: false,
-  portName: "",
-  lines: {
-    oneOn: true,
-    twoOn: true,
-    threeOn: false,
-    fourOn: false,
+    HomePage,
+    Settings,
   },
-});
 
-if (appAddress && appPort) {
-  const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
+  data() {
+    return {
+      appVersion: bodyDataset.appVersion || "X.X.X",
+      appAddress: bodyDataset.appAddress || "127.0.0.1",
+      appPort: bodyDataset.appPort || "3000",
 
-  // read from socket and update the timer display
-  socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+      menu: {
+        homePage: true,
+        settings: false,
+      },
 
-    if (
-      data.lineOne &&
-      data.lineOne == "00:00.000" &&
-      data.lineTwo &&
-      data.lineTwo == "00:00.000"
-    ) {
-      liveTimer.left = data.countdown;
-      liveTimer.right = data.countdown;
-    } else {
-      liveTimer.left = data.lineOne;
-      liveTimer.right = data.lineTwo;
+      liveTimer: {
+        left: "00:00.000",
+        right: "00:00.000",
+      },
+
+      settings: {
+        isConnected: true,
+        isRunning: false,
+        portName: "",
+        lines: {
+          oneOn: true,
+          twoOn: true,
+          threeOn: false,
+          fourOn: false,
+        },
+      },
+    };
+  },
+
+  mounted() {
+    if (this.appAddress && this.appPort) {
+      const socket = new WebSocket(
+        `ws://${this.appAddress}:${this.appPort}/ws`
+      );
+
+      // read from socket and update the timer display
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (
+          data.lineOne &&
+          data.lineOne == "00:00.000" &&
+          data.lineTwo &&
+          data.lineTwo == "00:00.000"
+        ) {
+          this.liveTimer.left = data.countdown;
+          this.liveTimer.right = data.countdown;
+        } else {
+          this.liveTimer.left = data.lineOne;
+          this.liveTimer.right = data.lineTwo;
+        }
+      };
+
+      socket.onopen = () => {
+        settings.isConnected = true;
+      };
+
+      socket.onerror = (event) => {
+        console.log("Socket error: ", event);
+      };
+
+      socket.onclose = (event) => {
+        settings.isConnected = false;
+      };
     }
-  };
-
-  socket.onopen = () => {
-    settings.isConnected = true;
-  };
-
-  socket.onerror = (event) => {
-    console.log("Socket error: ", event);
-  };
-
-  socket.onclose = (event) => {
-    settings.isConnected = false;
-  };
-}
-
-function startCloseTimer() {
-  if (settings.isRunning) {
-    fetch("/api/close", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    settings.isRunning = false;
-  } else {
-    if (!settings.isConnected || settings.portName == "") {
-      return;
-    }
-
-    fetch("/api/start", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        port: settings.portName,
-      }),
-    });
-
-    settings.isRunning = true;
-  }
-}
-
-function resetTimer() {
-  if (settings.isConnected && settings.isRunning) {
-    fetch("/api/reset", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
-}
+  },
+};
 </script>
 
 <template>
+  <Header :menu="menu" />
+
+  <HomePage v-if="menu.homePage" :settings="settings" :liveTimer="liveTimer" />
+  <Settings v-if="menu.settings" :settings="settings" />
+
   <Footer :app="appVersion" />
 </template>
 
@@ -128,7 +112,12 @@ body {
 
 .wrapper {
   max-width: 70vmax;
-  width: 100%;
-  margin: auto;
+  width: calc(100% - 6rem);
+  margin: 0 3rem;
+
+  @media only screen and (min-width: 800px) {
+    width: 100%;
+    margin: auto;
+  }
 }
 </style>

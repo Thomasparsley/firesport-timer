@@ -1,5 +1,12 @@
 <script setup>
-import { reactive } from "vue";
+import TimerDisplay from "../components/TimerDisplay.vue";
+
+import { defineProps } from "vue";
+
+defineProps({
+  settings: Object,
+  liveTimer: Object,
+});
 
 function startCloseTimer() {
   if (settings.isRunning) {
@@ -72,24 +79,6 @@ function resetTimer() {
       />
     </div>
   </div>
-
-  <div class="" v-if="settings.isConnected">
-    <button v-if="!settings.isRunning" @click="startCloseTimer">
-      Začít snímat časomíru
-    </button>
-    <button v-else @click="startCloseTimer">Ukončit snímání časomíry</button>
-
-    <button v-if="settings.isRunning" @click="resetTimer">
-      Resetovat čas na časomíře
-    </button>
-
-    <label>
-      <p>Název portu</p>
-      <input type="text" v-model="settings.portName" placeholder="COM4" />
-    </label>
-  </div>
-
-  <Footer :app="appVersion" />
 </template>
 
 <style lang="scss" scoped>
@@ -97,12 +86,17 @@ function resetTimer() {
   margin-top: 4rem;
 
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
+  @media only screen and (min-width: 800px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
   gap: 1.25rem;
 
   & > div {
     &:first-child {
-      grid-column: 1 / 3;
+      @media only screen and (min-width: 800px) {
+        grid-column: 1 / 3;
+      }
     }
   }
 }
