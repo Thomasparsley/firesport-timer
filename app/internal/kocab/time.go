@@ -10,7 +10,7 @@ func FormatTime(input time.Time) string {
 
 	// Add to time mili-seconds
 	mili := strconv.Itoa(int(input.Nanosecond()))
-	for len(mili) < 3 {
+	for len(mili) < 9 {
 		mili = "0" + mili
 	}
 
