@@ -1,44 +1,45 @@
 <script setup>
-import { defineProps } from "vue";
-
 defineProps({
-	app: String,
+  app: String,
 });
 </script>
 
 <template>
-	<footer>
-		<div>
-			<span>Verze aplikace: V{{ app }}</span>
-		</div>
+  <footer>
+    <div>
+      <span>Verze aplikace: V{{ app }}</span>
+    </div>
 
-		<div>
-			<a href="https://thomasparsley.cz/" target="_blank">Autor</a>
-			|
-			<a target="_blank">GitHub</a>
-		</div>
-	</footer>
+    <div>
+      <a href="https://thomasparsley.cz/" target="_blank">Autor</a>
+      |
+      <a href="https://github.com/Thomasparsley/firesport-timer" target="_blank"
+        >GitHub</a
+      >
+    </div>
+  </footer>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 footer {
-	position: fixed;
+  position: fixed;
 
-	left: 0;
-	bottom: 0;
+  bottom: 0;
+  left: 0;
 
-	width: calc(100% - (0.8rem * 2));
+  width: calc(100% - (2 * 0.8rem));
+  padding: 0.4rem 0.8rem;
 
-	display: flex;
-	justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
 
-	padding: 0.4rem 0.8rem;
+  font-size: 1.2rem;
+  color: white;
+  background-color: #1e2122;
 
-	color: white;
-	background-color: black;
-}
-
-a {
-	color: aqua;
+  a {
+    color: white;
+  }
 }
 </style>

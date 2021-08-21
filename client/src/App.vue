@@ -1,174 +1,123 @@
-<script setup>
-import TimerDisplay from "./components/TimerDisplay.vue";
+<script>
+import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
 
-import { reactive } from "vue";
-
-// This starter template is using Vue 3 experimental <script setup> SFCs
-// Check out https://github.com/vuejs/rfcs/blob/master/active-rfcs/0040-script-setup.md
+import HomePage from "./pages/Home.vue";
+import Settings from "./pages/Settings.vue";
 
 const bodyDataset = document.body.dataset;
 
-const appVersion = bodyDataset.appVersion || "X.X.X";
-const appAddress = bodyDataset.appAddress || "127.0.0.1";
-const appPort = bodyDataset.appPort || "3000";
+export default {
+  name: "App",
+  components: {
+    Header,
+    Footer,
 
-console.log({
-	appAddress,
-	appPort,
-	appVersion,
-});
+    HomePage,
+    Settings,
+  },
 
-const liveTimer = reactive({
-	left: "00:00.000",
-	right: "00:00.000",
-});
+  data() {
+    return {
+      appVersion: bodyDataset.appVersion || "X.X.X",
+      appAddress: bodyDataset.appAddress || "127.0.0.1",
+      appPort: bodyDataset.appPort || "3000",
 
-const timer = reactive({
-	isConnected: true,
-	isRunning: false,
-	portName: "",
-});
+      menu: {
+        homePage: true,
+        settings: false,
+      },
 
-if (appAddress && appPort) {
-	const socket = new WebSocket(`ws://${appAddress}:${appPort}/ws`);
+      liveTimer: {
+        left: "00:00.000",
+        right: "00:00.000",
+      },
 
-	// read from socket and update the timer display
-	socket.onmessage = (event) => {
-		const data = JSON.parse(event.data);
+      settings: {
+        isConnected: true,
+        isRunning: false,
+        portName: "",
+        lines: {
+          oneOn: true,
+          twoOn: true,
+          threeOn: false,
+          fourOn: false,
+        },
+      },
+    };
+  },
 
-		if (
-			data.lineOne &&
-			data.lineOne == "00:00.000" &&
-			data.lineTwo &&
-			data.lineTwo == "00:00.000"
-		) {
-			liveTimer.left = data.countdown;
-			liveTimer.right = data.countdown;
-		} else {
-			liveTimer.left = data.lineOne;
-			liveTimer.right = data.lineTwo;
-		}
-	};
+  mounted() {
+    if (this.appAddress && this.appPort) {
+      const socket = new WebSocket(
+        `ws://${this.appAddress}:${this.appPort}/ws`
+      );
 
-	socket.onopen = () => {
-		timer.isConnected = true;
-	};
+      // read from socket and update the timer display
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
 
-	socket.onerror = (event) => {
-		console.log("Socket error: ", event);
-	};
+        if (
+          data.lineOne &&
+          data.lineOne == "00:00.000" &&
+          data.lineTwo &&
+          data.lineTwo == "00:00.000"
+        ) {
+          this.liveTimer.left = data.countdown;
+          this.liveTimer.right = data.countdown;
+        } else {
+          this.liveTimer.left = data.lineOne;
+          this.liveTimer.right = data.lineTwo;
+        }
+      };
 
-	socket.onclose = (event) => {
-		timer.isConnected = false;
-	};
-}
+      socket.onopen = () => {
+        settings.isConnected = true;
+      };
 
-function startCloseTimer() {
-	if (timer.isRunning) {
-        fetch("/api/close", {
-			method: "POST",
-			credentials: "same-origin",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
+      socket.onerror = (event) => {
+        console.log("Socket error: ", event);
+      };
 
-		timer.isRunning = false;
-	} else {
-		if (!timer.isConnected || timer.portName == "") {
-			return;
-		}
-
-		fetch("/api/start", {
-			method: "POST",
-			credentials: "same-origin",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				port: timer.portName,
-			}),
-		});
-
-		timer.isRunning = true;
-	}
-}
-
-function resetTimer() {
-	if (timer.isConnected && timer.isRunning) {
-		fetch("/api/reset", {
-			method: "POST",
-			credentials: "same-origin",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-	}
-}
+      socket.onclose = (event) => {
+        settings.isConnected = false;
+      };
+    }
+  },
+};
 </script>
 
 <template>
-	<div class="timerGrid">
-		<TimerDisplay position="L" :time="liveTimer.left" />
-		<TimerDisplay position="R" :time="liveTimer.right" />
-	</div>
+  <Header :menu="menu" />
 
-	<div class="buttonGrid" v-if="timer.isConnected">
-		<button v-if="!timer.isRunning" @click="startCloseTimer">
-			Začít snímat časomíru
-		</button>
-		<button v-else @click="startCloseTimer">
-			Ukončit snímání časomíry
-		</button>
+  <HomePage v-if="menu.homePage" :settings="settings" :liveTimer="liveTimer" />
+  <Settings v-if="menu.settings" :settings="settings" />
 
-		<button v-if="timer.isRunning" @click="resetTimer">Resetovat čas na časomíře</button>
-
-		<label>
-			<p>Název portu</p>
-			<input type="text" v-model="timer.portName" placeholder="COM4" />
-		</label>
-	</div>
-
-	<Footer :app="appVersion" />
+  <Footer :app="appVersion" />
 </template>
 
-<style>
+<style lang="scss">
 body {
-	margin: 0;
+  margin: 0;
+  background-color: #f0f0f0;
 }
 
 #app {
-	font-family: Avenir, Helvetica, Arial, sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	color: #2c3e50;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
-	position: relative;
+  position: relative;
 }
 
-.timerGrid,
-.buttonGrid {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-	flex-wrap: wrap;
-}
+.wrapper {
+  max-width: 70vmax;
+  width: calc(100% - 6rem);
+  margin: 0 3rem;
 
-.timerGrid {
-	gap: 3.5rem;
-}
-
-.buttonGrid {
-	gap: 1rem;
-}
-
-button {
-	font-size: 1.25rem;
-}
-
-label p {
-	margin: 0;
+  @media only screen and (min-width: 800px) {
+    width: 100%;
+    margin: auto;
+  }
 }
 </style>
