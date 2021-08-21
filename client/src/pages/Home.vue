@@ -48,7 +48,9 @@ function resetTimer() {
       />
     </div>
 
-    <button @click="resetTimer">Resetovat čas na časomíře</button>
+    <button v-if="settings.isRunning" @click="resetTimer">
+      Resetovat čas na časomíře
+    </button>
   </div>
 </template>
 
