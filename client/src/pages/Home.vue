@@ -8,37 +8,6 @@ defineProps({
   liveTimer: Object,
 });
 
-function startCloseTimer() {
-  if (settings.isRunning) {
-    fetch("/api/close", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    settings.isRunning = false;
-  } else {
-    if (!settings.isConnected || settings.portName == "") {
-      return;
-    }
-
-    fetch("/api/start", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        port: settings.portName,
-      }),
-    });
-
-    settings.isRunning = true;
-  }
-}
-
 function resetTimer() {
   if (settings.isConnected && settings.isRunning) {
     fetch("/api/reset", {
@@ -78,6 +47,8 @@ function resetTimer() {
         time="00:00.000"
       />
     </div>
+
+    <button @click="resetTimer">Resetovat čas na časomíře</button>
   </div>
 </template>
 
@@ -98,6 +69,24 @@ function resetTimer() {
         grid-column: 1 / 3;
       }
     }
+  }
+}
+
+button {
+  cursor: pointer;
+
+  margin-top: 2rem;
+  padding: 1.5rem 3rem;
+  font-size: 2rem;
+
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  border: none;
+  border-radius: 1rem;
+
+  &:hover {
+    background-color: rgb(124, 124, 124);
+    color: white;
   }
 }
 </style>

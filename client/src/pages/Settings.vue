@@ -3,6 +3,39 @@ export default {
   props: {
     settings: Object,
   },
+
+  methods: {
+    startCloseTimer() {
+      if (settings.isRunning) {
+        fetch("/api/close", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        settings.isRunning = false;
+      } else {
+        if (!settings.isConnected || settings.portName == "") {
+          return;
+        }
+
+        fetch("/api/start", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            port: settings.portName,
+          }),
+        });
+
+        settings.isRunning = true;
+      }
+    },
+  },
 };
 </script>
 
