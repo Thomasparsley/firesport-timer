@@ -34,7 +34,7 @@ func Homepage(app *fiber.App) {
 				<title>Firesport Timer</title>
 			</head>
 
-			<body data-app-version="1.0.2" data-app-address="127.0.0.1" data-app-port="3000">
+			<body data-app-version="1.1.0" data-app-address="127.0.0.1" data-app-port="3000">
 				<div id="app"></div>
 
 				<style>%s</style>
