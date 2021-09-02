@@ -43,12 +43,12 @@ export default {
         :time="liveTimer.lineTwo"
       />
       <TimerDisplay
-        v-if="settings.lines.lineThree"
+        v-if="settings.lines.threeOn"
         title="Dráha tři"
         time="00:00.000"
       />
       <TimerDisplay
-        v-if="settings.lines.lineFour"
+        v-if="settings.lines.fourOn"
         title="Dráha čtyři"
         time="00:00.000"
       />
@@ -62,7 +62,7 @@ export default {
 
 <style lang="scss" scoped>
 .timer-grid {
-  margin-top: 4rem;
+  margin-top: 1rem;
 
   display: grid;
   grid-template-columns: 1fr;

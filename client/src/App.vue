@@ -43,8 +43,8 @@ export default {
         lines: {
           oneOn: true,
           twoOn: true,
-          threeOn: false,
-          fourOn: false,
+          threeOn: true,
+          fourOn: true,
         },
       },
     };

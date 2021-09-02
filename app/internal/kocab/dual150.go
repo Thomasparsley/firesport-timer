@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+const (
+	ResetDual150    = string("#RST")
+	ReadFromDual150 = string("#APP:cw:data?")
+)
+
 type Dual150 struct {
 	Countdown Line `json:"countdown"` //
 	LineOne   Line `json:"lineOne"`   // Left
