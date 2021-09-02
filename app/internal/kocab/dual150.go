@@ -53,24 +53,41 @@ func (Dual150) ParseRawData(rawData string) (Dual150, error) {
 		return Dual150{}, err
 	}
 
-	// left line
-	lineOne, err := Line{}.Parse(rawDataSplit[3], rawDataSplit[4])
-	if err != nil {
-		return Dual150{}, err
-	}
+	var lineOne, lineTwo, lineThree, lineFour Line
 
-	// right line
-	lineTwo, err := Line{}.Parse(rawDataSplit[5], rawDataSplit[6])
-	if err != nil {
-		return Dual150{}, err
+	if countdown.IsZero() {
+		lineOne.SetDefault()
+		lineTwo.SetDefault()
+		lineThree.SetDefault()
+		lineFour.SetDefault()
+	} else {
+		lineOne, err = Line{}.Parse(rawDataSplit[3], rawDataSplit[4])
+		if err != nil {
+			return Dual150{}, err
+		}
+
+		lineTwo, err = Line{}.Parse(rawDataSplit[5], rawDataSplit[6])
+		if err != nil {
+			return Dual150{}, err
+		}
+
+		lineThree, err = Line{}.Parse(rawDataSplit[7], rawDataSplit[8])
+		if err != nil {
+			return Dual150{}, err
+		}
+
+		lineFour, err = Line{}.Parse(rawDataSplit[9], rawDataSplit[10])
+		if err != nil {
+			return Dual150{}, err
+		}
 	}
 
 	d := Dual150{
 		Countdown: countdown,
 		LineOne:   lineOne,
 		LineTwo:   lineTwo,
-		LineThree: Line{}.SetDefault(),
-		LineFour:  Line{}.SetDefault(),
+		LineThree: lineThree,
+		LineFour:  lineFour,
 	}
 
 	return d, nil

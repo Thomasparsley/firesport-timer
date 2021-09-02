@@ -10,8 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	Serial "github.com/tarm/serial"
 	"thomasparsley.cz/firesport-timer/internal/kocab"
+	"thomasparsley.cz/firesport-timer/internal/serial"
 	"thomasparsley.cz/firesport-timer/internal/terminal"
-	"thomasparsley.cz/firesport-timer/pkg/serial"
 )
 
 const (
@@ -32,7 +32,6 @@ type portNameHttp struct {
 func main() {
 	if Dev {
 		log.Println("[INFO] Development mode enabled")
-		StartConsole()
 	} else {
 		if err := ui.Init(); err != nil {
 			log.Fatal("failed to initialize termui:")

@@ -11,7 +11,7 @@ func parseRawTimeToTime(rawTime string) (time.Time, error) {
 		return time.Time{}, err
 	}
 
-	t := time.Date(1, 1, 1, 0, 0, 0, timeInt*1000000, time.Local)
+	t := time.Date(1679, 1, 1, 0, 0, 0, timeInt*1000000, time.Local)
 
 	return t, nil
 }
