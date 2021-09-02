@@ -1,48 +1,54 @@
-<script setup>
+<script>
 import TimerDisplay from "../components/TimerDisplay.vue";
 
-import { defineProps } from "vue";
+export default {
+    components: {
+        TimerDisplay
+    },
 
-defineProps({
-  settings: Object,
-  liveTimer: Object,
-});
+    props: {
+        settings: Object,
+        liveTimer: Object,
+    },
 
-function resetTimer() {
-  if (settings.isConnected && settings.isRunning) {
-    fetch("/api/reset", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
+    methods: {
+        resetTimer() {
+            if (this.settings.isConnected && this.settings.isRunning) {
+                fetch("/api/reset", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                });
+            }
+        }
+    }
 }
 </script>
 
 <template>
   <div class="wrapper">
     <div class="timer-grid">
-      <TimerDisplay title="Odpočet" time="00:00.000" />
+      <TimerDisplay title="Odpočet" :time="liveTimer.countdown" />
 
       <TimerDisplay
         v-if="settings.lines.oneOn"
         title="Dráha jedna (Levý terč)"
-        :time="liveTimer.left"
+        :time="liveTimer.lineOne"
       />
       <TimerDisplay
         v-if="settings.lines.twoOn"
         title="Dráha dva (Pravý terč)"
-        :time="liveTimer.right"
+        :time="liveTimer.lineTwo"
       />
       <TimerDisplay
-        v-if="settings.lines.threeOn"
+        v-if="settings.lines.lineThree"
         title="Dráha tři"
         time="00:00.000"
       />
       <TimerDisplay
-        v-if="settings.lines.fourOn"
+        v-if="settings.lines.lineFour"
         title="Dráha čtyři"
         time="00:00.000"
       />

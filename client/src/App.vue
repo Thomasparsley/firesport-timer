@@ -29,8 +29,11 @@ export default {
       },
 
       liveTimer: {
-        left: "00:00.000",
-        right: "00:00.000",
+        countdown: "0:00.000",
+        lineOne: "0:00.000",
+        lineTwo: "0:00.000",
+        lineThree: "0:00.000",
+        lineFour: "0:00.000",
       },
 
       settings: {
@@ -57,22 +60,15 @@ export default {
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
-        if (
-          data.lineOne &&
-          data.lineOne == "00:00.000" &&
-          data.lineTwo &&
-          data.lineTwo == "00:00.000"
-        ) {
-          this.liveTimer.left = data.countdown;
-          this.liveTimer.right = data.countdown;
-        } else {
-          this.liveTimer.left = data.lineOne;
-          this.liveTimer.right = data.lineTwo;
-        }
+        this.liveTimer.countdown = data.countdown;
+        this.liveTimer.lineOne = data.lineOne;
+        this.liveTimer.lineTwo = data.lineTwo;
+        this.liveTimer.lineThree = data.lineThree;
+        this.liveTimer.lineFour = data.lineFour;
       };
 
       socket.onopen = () => {
-        settings.isConnected = true;
+        this.settings.isConnected = true;
       };
 
       socket.onerror = (event) => {
@@ -80,7 +76,7 @@ export default {
       };
 
       socket.onclose = (event) => {
-        settings.isConnected = false;
+        this.settings.isConnected = false;
       };
     }
   },

@@ -6,7 +6,7 @@ import (
 )
 
 func FormatTime(input time.Time) string {
-	t := input.Format("04:05")
+	t := input.Format("4:05")
 
 	// Add to time mili-seconds
 	mili := strconv.Itoa(int(input.Nanosecond()))

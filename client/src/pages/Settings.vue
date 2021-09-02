@@ -6,7 +6,7 @@ export default {
 
   methods: {
     startCloseTimer() {
-      if (settings.isRunning) {
+      if (this.settings.isRunning) {
         fetch("/api/close", {
           method: "POST",
           credentials: "same-origin",
@@ -15,9 +15,9 @@ export default {
           },
         });
 
-        settings.isRunning = false;
+        this.settings.isRunning = false;
       } else {
-        if (!settings.isConnected || settings.portName == "") {
+        if (!this.settings.isConnected || this.settings.portName == "") {
           return;
         }
 
@@ -28,11 +28,11 @@ export default {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            port: settings.portName,
+            port: this.settings.portName,
           }),
         });
 
-        settings.isRunning = true;
+        this.settings.isRunning = true;
       }
     },
   },
@@ -45,10 +45,6 @@ export default {
       Začít snímat časomíru
     </button>
     <button v-else @click="startCloseTimer">Ukončit snímání časomíry</button>
-
-    <button v-if="settings.isRunning" @click="resetTimer">
-      Resetovat čas na časomíře
-    </button>
 
     <label>
       <p>Název portu</p>
