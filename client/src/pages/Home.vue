@@ -45,12 +45,12 @@ export default {
       <TimerDisplay
         v-if="settings.lines.threeOn"
         title="Dráha tři"
-        time="00:00.000"
+        :time="liveTimer.lineThree"
       />
       <TimerDisplay
         v-if="settings.lines.fourOn"
         title="Dráha čtyři"
-        time="00:00.000"
+        :time="liveTimer.lineFour"
       />
     </div>
 

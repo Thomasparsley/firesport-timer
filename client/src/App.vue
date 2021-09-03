@@ -47,6 +47,8 @@ export default {
           fourOn: true,
         },
       },
+
+      error: ''
     };
   },
 
@@ -61,10 +63,13 @@ export default {
         const data = JSON.parse(event.data);
 
         this.liveTimer.countdown = data.countdown;
+
         this.liveTimer.lineOne = data.lineOne;
         this.liveTimer.lineTwo = data.lineTwo;
         this.liveTimer.lineThree = data.lineThree;
         this.liveTimer.lineFour = data.lineFour;
+
+        this.error = data.error;
       };
 
       socket.onopen = () => {
@@ -85,6 +90,8 @@ export default {
 
 <template>
   <Header :menu="menu" />
+
+  {{ error }}
 
   <HomePage v-if="menu.homePage" :settings="settings" :liveTimer="liveTimer" />
   <Settings v-if="menu.settings" :settings="settings" />

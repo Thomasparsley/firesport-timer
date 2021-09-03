@@ -79,20 +79,10 @@ func main() {
 		webui, _ := lorca.New(httpLink, "", 1280, 720)
 		defer webui.Close()
 
+		var exitApp bool
 		for {
-			/* select {
-			case <-ticker:
-
-			}
-			*/
-
-			// Dual150
-			select {
-			case v, ok := <-dual150Chan:
-				if ok {
-					dual150 = v
-				}
-			default:
+			if exitApp {
+				break
 			}
 
 			// Start serial port
@@ -101,8 +91,15 @@ func main() {
 				if ok && v {
 					go startSerialReader(portName, resetDual150Chan, errorChan, dual150Chan, closeReader)
 				}
+			case v, ok := <-dual150Chan:
+				if ok {
+					dual150 = v
+				}
+			case <-webui.Done():
+				exitApp = true
 			default:
 			}
+
 		}
 	}
 }

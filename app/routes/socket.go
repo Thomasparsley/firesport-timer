@@ -10,6 +10,8 @@ import (
 	"thomasparsley.cz/firesport-timer/internal/kocab"
 )
 
+var e string
+
 func Socket(app *fiber.App, errorChan chan string, dual150 *kocab.Dual150) {
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) { // Returns true if the client requested upgrade to the WebSocket protocol
@@ -20,21 +22,33 @@ func Socket(app *fiber.App, errorChan chan string, dual150 *kocab.Dual150) {
 
 	app.Get("/ws", websocket.New(func(c *websocket.Conn) {
 		for {
+
+			select {
+			case v, ok := <-errorChan:
+				if ok {
+					e = v
+				}
+			default:
+			}
+
 			toSend := map[string]interface{}{
 				"countdown": kocab.FormatTime(dual150.Countdown.Time),
+
 				"lineOne":   kocab.FormatTime(dual150.LineOne.Time),
 				"lineTwo":   kocab.FormatTime(dual150.LineTwo.Time),
 				"lineThree": kocab.FormatTime(dual150.LineThree.Time),
 				"lineFour":  kocab.FormatTime(dual150.LineFour.Time),
+
+				"error": e,
 			}
 
-			b, err := json.Marshal(toSend)
+			jsonBytes, err := json.Marshal(toSend)
 			if err != nil {
 				errorChan <- fmt.Sprintf("Error: %s", err)
 				break
 			}
 
-			err = c.WriteMessage(websocket.TextMessage, b)
+			err = c.WriteMessage(websocket.TextMessage, jsonBytes)
 			if err != nil {
 				errorChan <- fmt.Sprintf("Error: %s", err)
 				break
