@@ -2,6 +2,10 @@
     This script is used to build the project.
 #>
 
+if (Test-Path "firesport-timer.exe") {
+    Remove-Item "firesport-timer.exe"
+}
+
 Set-Location client
 npm install
 if (Test-Path dist) {
