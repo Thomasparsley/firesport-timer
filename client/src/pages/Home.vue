@@ -33,22 +33,22 @@ export default {
       <TimerDisplay title="Odpočet" :time="liveTimer.countdown" />
 
       <TimerDisplay
-        v-if="settings.lines.oneOn"
+        v-if="settings.lines >= 1"
         title="Dráha jedna (Levý terč)"
         :time="liveTimer.lineOne"
       />
       <TimerDisplay
-        v-if="settings.lines.twoOn"
+        v-if="settings.lines >= 2"
         title="Dráha dva (Pravý terč)"
         :time="liveTimer.lineTwo"
       />
       <TimerDisplay
-        v-if="settings.lines.threeOn"
+        v-if="settings.lines >= 3"
         title="Dráha tři"
         :time="liveTimer.lineThree"
       />
       <TimerDisplay
-        v-if="settings.lines.fourOn"
+        v-if="settings.lines >= 4"
         title="Dráha čtyři"
         :time="liveTimer.lineFour"
       />

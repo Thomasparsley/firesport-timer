@@ -40,12 +40,7 @@ export default {
         isConnected: true,
         isRunning: false,
         portName: "",
-        lines: {
-          oneOn: true,
-          twoOn: true,
-          threeOn: true,
-          fourOn: true,
-        },
+        lines: 2
       },
 
       error: ''

@@ -50,6 +50,11 @@ export default {
       <p>Název portu</p>
       <input type="text" v-model="settings.portName" placeholder="COM4" />
     </label>
+
+    <label>
+        <p>Počet drah</p>
+        <input type="number" v-model="settings.lines" min="1" max="4" />
+    </label>
   </div>
 </template>
 
