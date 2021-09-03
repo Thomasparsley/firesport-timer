@@ -53,38 +53,40 @@ func (Dual150) ParseRawData(rawData string) (Dual150, error) {
 
 	rawDataSplit := strings.Split(rawData, ":")
 
-	countdown, err := Line{}.CountdownParse(rawDataSplit[1])
+	var countdown Line
+
+	lineOne, err := Line{}.Parse(rawDataSplit[3], rawDataSplit[4])
 	if err != nil {
 		return Dual150{}, err
 	}
 
-	var lineOne, lineTwo, lineThree, lineFour Line
+	lineTwo, err := Line{}.Parse(rawDataSplit[5], rawDataSplit[6])
+	if err != nil {
+		return Dual150{}, err
+	}
 
-	if countdown.IsZero() {
-		lineOne.SetDefault()
-		lineTwo.SetDefault()
-		lineThree.SetDefault()
-		lineFour.SetDefault()
+	lineThree, err := Line{}.Parse(rawDataSplit[7], rawDataSplit[8])
+	if err != nil {
+		return Dual150{}, err
+	}
+
+	lineFour, err := Line{}.Parse(rawDataSplit[9], rawDataSplit[10])
+	if err != nil {
+		return Dual150{}, err
+	}
+
+	if !lineOne.IsZero() || !lineTwo.IsZero() || !lineThree.IsZero() || !lineFour.IsZero() {
+		countdown = Line{}.SetDefault()
 	} else {
-		lineOne, err = Line{}.Parse(rawDataSplit[3], rawDataSplit[4])
+		countdown, err = Line{}.CountdownParse(rawDataSplit[1])
 		if err != nil {
 			return Dual150{}, err
 		}
 
-		lineTwo, err = Line{}.Parse(rawDataSplit[5], rawDataSplit[6])
-		if err != nil {
-			return Dual150{}, err
-		}
-
-		lineThree, err = Line{}.Parse(rawDataSplit[7], rawDataSplit[8])
-		if err != nil {
-			return Dual150{}, err
-		}
-
-		lineFour, err = Line{}.Parse(rawDataSplit[9], rawDataSplit[10])
-		if err != nil {
-			return Dual150{}, err
-		}
+		lineOne = Line{}.SetDefault()
+		lineTwo = Line{}.SetDefault()
+		lineThree = Line{}.SetDefault()
+		lineFour = Line{}.SetDefault()
 	}
 
 	d := Dual150{
