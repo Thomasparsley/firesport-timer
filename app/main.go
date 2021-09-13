@@ -6,15 +6,14 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	Serial "github.com/tarm/serial"
 	"github.com/zserge/lorca"
 
 	"thomasparsley.cz/firesport-timer/internal/kocab"
-	"thomasparsley.cz/firesport-timer/internal/serial"
+	"thomasparsley.cz/firesport-timer/internal/serialReader"
 )
 
 const (
-	Dev = bool(false)
+	Dev = bool(true)
 )
 
 type portNameHttp struct {
@@ -25,8 +24,6 @@ func main() {
 	if Dev {
 		log.Println("[INFO] Development mode enabled")
 	} else {
-		/* ticker := time.NewTicker(time.Second / 24).C */
-
 		httpLinkChan := make(chan string)
 		errorChan := make(chan string, 10)
 		var httpLink string
@@ -105,24 +102,19 @@ func main() {
 }
 
 func startSerialReader(portName string, resetDual150Chan chan bool, errorChan chan string, dualChan chan kocab.Dual150, closeReader chan bool) {
-	serialPortConfig := &Serial.Config{
-		Name:        portName, //"COM4",
-		Baud:        115200,
-		ReadTimeout: time.Second * 5,
-	}
-
-	sa, err := Serial.OpenPort(serialPortConfig)
-	if err != nil {
-		errorChan <- err.Error()
-	}
-
-	close := false
 	defer func() {
 		if r := recover(); r != nil {
 			errorChan <- fmt.Sprintln("Recovered in startSerialReader", r)
 		}
 	}()
 
+	sr := serialReader.New(portName, 115200, time.Second*5)
+	err := sr.Open()
+	if err != nil {
+		errorChan <- err.Error()
+	}
+
+	close := false
 	for {
 		select {
 		case v, ok := <-closeReader:
@@ -131,17 +123,23 @@ func startSerialReader(portName string, resetDual150Chan chan bool, errorChan ch
 			}
 		case v, ok := <-resetDual150Chan:
 			if ok && v {
-				_, err := serial.WriteLine(sa, kocab.ResetDual150)
+				_, err := sr.WriteLine(kocab.ResetDual150)
 				if err != nil {
 					errorChan <- err.Error()
+					continue
 				}
-
 			}
 		default:
-			output, err := ReadLine(sa, kocab.ReadFromDual150)
+			_, err := sr.WriteLine(kocab.ReadFromDual150)
 			if err != nil {
 				errorChan <- err.Error()
-				break
+				continue
+			}
+
+			output, err := sr.ReadLine()
+			if err != nil {
+				errorChan <- err.Error()
+				continue
 			}
 
 			d, err := kocab.Dual150{}.ParseRawData(output)
@@ -149,7 +147,6 @@ func startSerialReader(portName string, resetDual150Chan chan bool, errorChan ch
 				errorChan <- err.Error()
 				continue
 			}
-
 			dualChan <- d
 
 			time.Sleep(time.Second / 12)
@@ -160,5 +157,5 @@ func startSerialReader(portName string, resetDual150Chan chan bool, errorChan ch
 		}
 	}
 
-	sa.Close()
+	sr.Close()
 }
