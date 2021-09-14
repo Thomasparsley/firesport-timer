@@ -1,4 +1,4 @@
-import tkinter as tk
+""" import tkinter as tk
 
 
 def a():
@@ -25,4 +25,19 @@ def super_loop():
 
 
 if __name__ == '__main__':
-    main()
+    main() """
+
+import os
+import serial
+
+from kocab import dual150
+
+ser = serial.Serial('COM4', 115200, timeout=0.1)
+for _ in range(250):
+    write_command = dual150.READ_COMMAND + "\n"
+    ser.write(bytes(write_command, 'utf-8'))
+    raw = ser.readline()
+
+    print(raw)
+    d = dual150.parse_raw_data(raw)
+    print(d)
