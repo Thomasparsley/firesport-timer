@@ -13,9 +13,9 @@ type Serial struct {
 	Baud        int
 	ReadTimeout time.Duration
 
-	config   bool
+	Config   bool
 	port     *serial.Port
-	portOpen bool
+	PortOpen bool
 }
 
 func New(name string, baud int, readTimeout time.Duration) Serial {
@@ -24,12 +24,12 @@ func New(name string, baud int, readTimeout time.Duration) Serial {
 		Baud:        baud,
 		ReadTimeout: readTimeout,
 
-		config: true,
+		Config: true,
 	}
 }
 
 func (s *Serial) Open() error {
-	if !s.config {
+	if !s.Config {
 		return errors.New("serial is not configured")
 	} else if s.port != nil {
 		return errors.New("serial is already open")
@@ -46,23 +46,23 @@ func (s *Serial) Open() error {
 		return err
 	}
 
-	s.portOpen = true
+	s.PortOpen = true
 	return nil
 }
 
 func (s *Serial) Close() error {
-	if !s.config {
+	if !s.Config {
 		return errors.New("serial is not configured")
 	} else if s.port == nil {
 		return errors.New("serial is not open")
 	}
 
-	s.portOpen = false
+	s.PortOpen = false
 	return s.port.Close()
 }
 
 func (s *Serial) Write(data string) (int, error) {
-	if !s.config {
+	if !s.Config {
 		return 0, errors.New("serial is not configured")
 	} else if s.port == nil {
 		return 0, errors.New("serial is not open")
@@ -76,7 +76,7 @@ func (s *Serial) WriteLine(data string) (int, error) {
 }
 
 func (s *Serial) Read() (string, error) {
-	if !s.config {
+	if !s.Config {
 		return "", errors.New("serial is not configured")
 	} else if s.port == nil {
 		return "", errors.New("serial is not open")
