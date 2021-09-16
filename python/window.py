@@ -1,16 +1,10 @@
 import tkinter as tk
 
-BACKGROUND_WHITE = "white"
-BACKGROUND_BLACK = "black"
-
-THEME_DARK = "dark"
-THEME_LIGHT = "light"
+COLOR_WHITE: str = 'white'
 
 
 class Window:
     window = tk.Tk()
-    theme: str = THEME_LIGHT
-    theme_changed: bool = False
 
     def __init__(self, title: str, width: int, height: int):
         self.title = title
@@ -19,24 +13,12 @@ class Window:
 
         self.window.title(self.title)
         self.window.geometry(str(self.width) + "x" + str(self.height))
-        self.window.configure(background=BACKGROUND_WHITE)
+        self.window.configure(background=COLOR_WHITE)
 
-    def change_theme(self):
-        if self.theme == THEME_LIGHT:
-            self.theme = THEME_DARK
-        else:
-            self.theme = THEME_LIGHT
-
-        self.theme_changed = True
-
-    def main_loop(self, widget_list: list):
+    def main_loop(self, custom_func=None):
         while True:
-            """ if self.theme_changed:
-                self.theme_changed = False
-                self.window.configure(background=self.theme)
-
-                for windget in widget_list:
-                    windget.configure(background=self.theme) """
+            if custom_func is not None:
+                custom_func()
 
             self.window.update_idletasks()
             self.window.update()

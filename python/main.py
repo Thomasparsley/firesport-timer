@@ -10,18 +10,19 @@ def main():
         height=720,
     )
 
+    top_frame = tk.Frame(root.window)
+    main_menu = tk.Menu(top_frame)
+    main_menu.add_command(label="Nastavení")
+    root.window.config(menu=main_menu)
+
     my_label = tk.Label(root.window, text="Hello World")
     my_label.pack()
 
     my_button = tk.Button(
-        master=root.window, text="Change mode", command=root.change_theme)
+        master=root.window, text="Change mode")
     my_button.pack()
 
-    root.main_loop(widget_list=[
-        my_label,
-        my_button
-    ])
-    print("Goodbye")
+    root.main_loop()
 
 
 if __name__ == '__main__':
