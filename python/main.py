@@ -1,33 +1,33 @@
-""" import tkinter as tk
+import tkinter as tk
 
-
-def a():
-    print("a")
+import window
 
 
 def main():
-    root = tk.Tk()
-    root.title("Firesport timer")
+    root = window.Window(
+        title="Firesport timer",
+        width=1280,
+        height=720,
+    )
 
-    my_label = tk.Label(root, text="Hello World")
+    my_label = tk.Label(root.window, text="Hello World")
     my_label.pack()
 
-    my_button = tk.Button(root, text="Click me", command=a)
+    my_button = tk.Button(
+        master=root.window, text="Change mode", command=root.change_theme)
     my_button.pack()
 
-    root.mainloop()
-
-    super_loop()
-
-
-def super_loop():
-    pass
+    root.main_loop(widget_list=[
+        my_label,
+        my_button
+    ])
+    print("Goodbye")
 
 
 if __name__ == '__main__':
-    main() """
+    main()
 
-import os
+""" import os
 import serial
 
 from kocab import dual150
@@ -40,4 +40,4 @@ for _ in range(250):
 
     print(raw)
     d = dual150.parse_raw_data(raw)
-    print(d)
+    print(d) """
