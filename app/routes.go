@@ -10,5 +10,4 @@ import (
 func initRoutes(app *fiber.App, errorChan chan string, dual150 *kocab.Dual150) {
 	routes.Homepage(app)
 	routes.Socket(app, errorChan, dual150)
-
 }

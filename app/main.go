@@ -58,7 +58,10 @@ func main() {
 
 		defer func() {
 			if sr.Config && sr.PortOpen {
-				sr.Close()
+				err := sr.Close()
+				if err != nil {
+					errorChan <- err.Error()
+				}
 			}
 		}()
 
@@ -104,7 +107,10 @@ func main() {
 
 			link := "127.0.0.1:3000"
 			httpLinkChan <- "http://" + link + "/"
-			app.Listen(link)
+			err := app.Listen(link)
+			if err != nil {
+				errorChan <- err.Error()
+			}
 		}()
 
 		httpLink = <-httpLinkChan

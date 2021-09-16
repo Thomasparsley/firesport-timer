@@ -19,10 +19,10 @@ type Status struct {
 }
 
 func New() Status {
-	return new(UndefinedID, UndefinedName)
+	return newStatus(UndefinedID, UndefinedName)
 }
 
-func new(id int, name string) Status {
+func newStatus(id int, name string) Status {
 	return Status{
 		Id:   id,
 		Name: name,
@@ -32,13 +32,13 @@ func new(id int, name string) Status {
 func GetByID(id int) Status {
 	switch id {
 	case DefaultID:
-		return new(DefaultID, DefaultName)
+		return newStatus(DefaultID, DefaultName)
 	case RunID:
-		return new(RunID, RunName)
+		return newStatus(RunID, RunName)
 	case StopID:
-		return new(StopID, StopName)
+		return newStatus(StopID, StopName)
 	default:
-		return new(UndefinedID, UndefinedName)
+		return newStatus(UndefinedID, UndefinedName)
 	}
 }
 

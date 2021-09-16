@@ -59,7 +59,7 @@ func ParseDual150(rawData string) (Dual150, error) {
 		return Dual150{}, errors.New("invalid rawData length")
 	}
 
-	// Chech if rawData contain a 13x ':', if not, it's not a valid Dual150
+	// Check if rawData contain a 13x ':', if not, it's not a valid Dual150
 	if strings.Count(rawData, ":") != 13 {
 		log.Println("invalid rawData")
 		return Dual150{}, errors.New("invalid rawData")
