@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -22,21 +21,55 @@ type portNameHttp struct {
 
 func main() {
 	if Dev {
-		log.Println("[INFO] Development mode enabled")
+		/* log.Println("[INFO] Development mode enabled")
+
+		sr := serialReader.New("COM4", 115200, time.Second)
+		err := sr.Open()
+		if err != nil {
+			panic(err)
+		}
+
+		// for lopp in range 10
+		i := 0
+		for {
+			sr.WriteLine(kocab.ReadFromDual150)
+			l, err := sr.ReadLine()
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(l)
+
+			time.Sleep(time.Second)
+
+			if i > 10 {
+				break
+			}
+
+			i++
+		}
+
+		sr.Close() */
 	} else {
-		httpLinkChan := make(chan string)
+		var sr serialReader.Serial
 		errorChan := make(chan string, 10)
+		if r := recover(); r != nil {
+			errorChan <- fmt.Sprintln("Recovered in main func", r)
+		}
+
+		defer func() {
+			if sr.Config && sr.PortOpen {
+				sr.Close()
+			}
+		}()
+
+		httpLinkChan := make(chan string)
 		var httpLink string
 
 		startReader := make(chan bool)
 		closeReader := make(chan bool)
 		portName := ""
-		resetDual150Chan := make(chan bool)
+		var resetDual150 bool
 		dual150 := kocab.NewDual150()
-
-		if r := recover(); r != nil {
-			errorChan <- fmt.Sprintln("Recovered in main func", r)
-		}
 
 		// Start HTTP server
 		go func() {
@@ -59,7 +92,7 @@ func main() {
 			})
 
 			app.Post("/api/reset", func(c *fiber.Ctx) error {
-				resetDual150Chan <- true
+				resetDual150 = true
 				return c.SendStatus(200)
 			})
 
@@ -80,23 +113,21 @@ func main() {
 		defer webui.Close()
 
 		var exitApp bool
-		var sr serialReader.Serial
 		for {
 			if exitApp {
 				break
 			}
 
 			if sr.Config && sr.PortOpen {
-				select {
-				case v, ok := <-resetDual150Chan:
-					if ok && v {
-						_, err := sr.WriteLine(kocab.ResetDual150)
-						if err != nil {
-							errorChan <- err.Error()
-							continue
-						}
+				if resetDual150 {
+					_, err := sr.WriteLine(kocab.ResetDual150)
+					if err != nil {
+						errorChan <- err.Error()
 					}
-				default:
+
+					fmt.Println(resetDual150)
+					resetDual150 = false
+					fmt.Println(resetDual150)
 				}
 
 				_, err := sr.WriteLine(kocab.ReadFromDual150)
@@ -128,6 +159,7 @@ func main() {
 					err := sr.Open()
 					if err != nil {
 						errorChan <- err.Error()
+						continue
 					}
 				}
 			case v, ok := <-closeReader:
@@ -135,6 +167,7 @@ func main() {
 					err := sr.Close()
 					if err != nil {
 						errorChan <- err.Error()
+						continue
 					}
 				}
 			case <-webui.Done():
@@ -142,6 +175,7 @@ func main() {
 			default:
 			}
 
+			time.Sleep(time.Second / 24)
 		}
 	}
 }

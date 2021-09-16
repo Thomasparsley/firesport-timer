@@ -20,6 +20,7 @@ package kocab
 
 import (
 	"errors"
+	"log"
 	"strings"
 
 	"thomasparsley.cz/firesport-timer/timers/line"
@@ -53,8 +54,15 @@ func NewDual150() Dual150 {
 }
 
 func ParseDual150(rawData string) (Dual150, error) {
-	if len(rawData) < 10 {
+	log.Println(rawData)
+	if len(rawData) < 27 {
 		return Dual150{}, errors.New("invalid rawData length")
+	}
+
+	// Chech if rawData contain a 13x ':', if not, it's not a valid Dual150
+	if strings.Count(rawData, ":") != 13 {
+		log.Println("invalid rawData")
+		return Dual150{}, errors.New("invalid rawData")
 	}
 
 	rawDataSplit := strings.Split(rawData, ":")

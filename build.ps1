@@ -36,7 +36,7 @@ Get-ChildItem *.css | Rename-Item -NewName "index.css"
 
 
 Set-Location ../
-go build -ldflags -H=windowsgui
+go build <# -ldflags -H=windowsgui #>
 
 Set-Location routes
 if (Test-Path index.css) {

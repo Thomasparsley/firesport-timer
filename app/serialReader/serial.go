@@ -93,7 +93,6 @@ func (s *Serial) Read() (string, error) {
 
 func (s *Serial) ReadLine() (string, error) {
 	var stringBuff string
-	var counter int
 
 	for {
 		readedLine, err := s.Read()
@@ -102,15 +101,9 @@ func (s *Serial) ReadLine() (string, error) {
 		}
 
 		if strings.Contains(readedLine, "\r") {
-			counter++
-			stringBuff = strings.Split(stringBuff, "\r")[counter]
-
-			if counter == 1 {
-				break
-			}
+			return stringBuff, nil
 		} else {
 			stringBuff += readedLine
 		}
 	}
-	return stringBuff, nil
 }
