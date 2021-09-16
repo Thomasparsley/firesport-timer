@@ -2,7 +2,8 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"thomasparsley.cz/firesport-timer/internal/kocab"
+
+	"thomasparsley.cz/firesport-timer/timers/vendors/kocab"
 )
 
 func http(errorChan chan string, dual150 *kocab.Dual150) *fiber.App {

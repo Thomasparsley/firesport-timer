@@ -8,12 +8,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/zserge/lorca"
 
-	"thomasparsley.cz/firesport-timer/internal/kocab"
-	"thomasparsley.cz/firesport-timer/internal/serialReader"
+	"thomasparsley.cz/firesport-timer/serialReader"
+	"thomasparsley.cz/firesport-timer/timers/vendors/kocab"
 )
 
 const (
-	Dev = bool(true)
+	Dev = bool(false)
 )
 
 type portNameHttp struct {
@@ -32,8 +32,11 @@ func main() {
 		closeReader := make(chan bool)
 		portName := ""
 		resetDual150Chan := make(chan bool)
-		dual150Chan := make(chan kocab.Dual150, 2)
-		dual150 := kocab.Dual150{}.New()
+		dual150 := kocab.NewDual150()
+
+		if r := recover(); r != nil {
+			errorChan <- fmt.Sprintln("Recovered in main func", r)
+		}
 
 		// Start HTTP server
 		go func() {
@@ -77,20 +80,62 @@ func main() {
 		defer webui.Close()
 
 		var exitApp bool
+		var sr serialReader.Serial
 		for {
 			if exitApp {
 				break
+			}
+
+			if sr.Config && sr.PortOpen {
+				select {
+				case v, ok := <-resetDual150Chan:
+					if ok && v {
+						_, err := sr.WriteLine(kocab.ResetDual150)
+						if err != nil {
+							errorChan <- err.Error()
+							continue
+						}
+					}
+				default:
+				}
+
+				_, err := sr.WriteLine(kocab.ReadFromDual150)
+				if err != nil {
+					errorChan <- err.Error()
+					continue
+				}
+
+				output, err := sr.ReadLine()
+				if err != nil {
+					errorChan <- err.Error()
+					continue
+				}
+
+				d, err := kocab.ParseDual150(output)
+				if err != nil {
+					errorChan <- err.Error()
+					continue
+				}
+
+				dual150 = d
 			}
 
 			// Start serial port
 			select {
 			case v, ok := <-startReader:
 				if ok && v {
-					go startSerialReader(portName, resetDual150Chan, errorChan, dual150Chan, closeReader)
+					sr = serialReader.New(portName, 115200, time.Second)
+					err := sr.Open()
+					if err != nil {
+						errorChan <- err.Error()
+					}
 				}
-			case v, ok := <-dual150Chan:
-				if ok {
-					dual150 = v
+			case v, ok := <-closeReader:
+				if ok && v {
+					err := sr.Close()
+					if err != nil {
+						errorChan <- err.Error()
+					}
 				}
 			case <-webui.Done():
 				exitApp = true
@@ -99,63 +144,4 @@ func main() {
 
 		}
 	}
-}
-
-func startSerialReader(portName string, resetDual150Chan chan bool, errorChan chan string, dualChan chan kocab.Dual150, closeReader chan bool) {
-	defer func() {
-		if r := recover(); r != nil {
-			errorChan <- fmt.Sprintln("Recovered in startSerialReader", r)
-		}
-	}()
-
-	sr := serialReader.New(portName, 115200, time.Second*5)
-	err := sr.Open()
-	if err != nil {
-		errorChan <- err.Error()
-	}
-
-	close := false
-	for {
-		select {
-		case v, ok := <-closeReader:
-			if ok && v {
-				close = v
-			}
-		case v, ok := <-resetDual150Chan:
-			if ok && v {
-				_, err := sr.WriteLine(kocab.ResetDual150)
-				if err != nil {
-					errorChan <- err.Error()
-					continue
-				}
-			}
-		default:
-			_, err := sr.WriteLine(kocab.ReadFromDual150)
-			if err != nil {
-				errorChan <- err.Error()
-				continue
-			}
-
-			output, err := sr.ReadLine()
-			if err != nil {
-				errorChan <- err.Error()
-				continue
-			}
-
-			d, err := kocab.Dual150{}.ParseRawData(output)
-			if err != nil {
-				errorChan <- err.Error()
-				continue
-			}
-			dualChan <- d
-
-			time.Sleep(time.Second / 12)
-		}
-
-		if close {
-			break
-		}
-	}
-
-	sr.Close()
 }

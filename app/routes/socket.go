@@ -7,7 +7,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	websocket "github.com/gofiber/websocket/v2"
-	"thomasparsley.cz/firesport-timer/internal/kocab"
+
+	"thomasparsley.cz/firesport-timer/timers/vendors/kocab"
 )
 
 var e string
@@ -33,7 +34,6 @@ func Socket(app *fiber.App, errorChan chan string, dual150 *kocab.Dual150) {
 
 			toSend := map[string]interface{}{
 				"countdown": kocab.FormatTime(dual150.Countdown.Time),
-
 				"lineOne":   kocab.FormatTime(dual150.LineOne.Time),
 				"lineTwo":   kocab.FormatTime(dual150.LineTwo.Time),
 				"lineThree": kocab.FormatTime(dual150.LineThree.Time),
