@@ -14,6 +14,9 @@ require (
 	github.com/valyala/fasthttp v1.30.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/zserge/lorca v0.1.10
+	go.bug.st/serial.v1 v0.0.0-20191202182710-24a6610f0541
 	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8 // indirect
 	golang.org/x/sys v0.0.0-20210915083310-ed5796bab164 // indirect
 )
+
+require github.com/creack/goselect v0.1.2 // indirect

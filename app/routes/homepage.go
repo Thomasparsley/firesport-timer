@@ -7,10 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-//go:embed index.js
 var js string
 
-//go:embed index.css
 var css string
 
 func Homepage(app *fiber.App) {
