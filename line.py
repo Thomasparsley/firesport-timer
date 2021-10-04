@@ -1,10 +1,9 @@
-from datetime import datetime
-
+import ms
 import status
 
 
 class Line:
-    def __init__(self, time: datetime, status: status.Status):
+    def __init__(self, time: ms.Ms, status: status.Status):
         self.time = time
         self.status = status
 
@@ -12,11 +11,11 @@ class Line:
         return str(self.time) + " " + str(self.status)
 
     def set_default(self):
-        self.time = datetime(1, 1, 1, 0, 0, 0, 0)
+        self.time = ms.Ms(0)
         self.status = status.get_status_by_id(status.DEFAULT_ID)
 
     def is_zero(self) -> bool:
-        return self.time.hour == 0 and self.time.minute == 0 and self.time.second == 0 and self.time.microsecond == 0
+        return self.time.value == 0
 
     def format_time(self) -> str:
         """
@@ -27,7 +26,7 @@ class Line:
 
 
 def new() -> Line:
-    return Line(datetime(1, 1, 1, 0, 0, 0, 0), status.get_status_by_id(status.DEFAULT_ID))
+    return Line(ms.Ms(0), status.get_status_by_id(status.DEFAULT_ID))
 
 
 def parse(raw_time: str, raw_id: str) -> Line:
