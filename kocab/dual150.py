@@ -1,4 +1,4 @@
-from . import line
+import line
 
 RESET_COMMAND = "#RST"
 READ_COMMAND = "#APP:cw:data?"

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from . import status
+import status
 
 
 class Line:

@@ -16,13 +16,19 @@ class Status:
     def __str__(self):
         return self.name
 
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Status):
+            return self.id == other.id
+        else:
+            return False
+
 
 def get_status_by_id(id: int) -> Status:
-    if id == 1:
+    if id == DEFAULT_ID:
         return Status(DEFAULT_ID, DEFAULT_NAME)
-    elif id == 2:
+    elif id == RUN_ID:
         return Status(RUN_ID, RUN_NAME)
-    elif id == 8:
+    elif id == STOP_ID:
         return Status(STOP_ID, STOP_NAME)
     else:
         return Status(UNDEFINED_ID, UNDEFINED_NAME)
