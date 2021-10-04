@@ -4,6 +4,25 @@ from ms import *
 
 
 class TestMs(unittest.TestCase):
+    def test_lt(self):
+        self.assertTrue(Ms(0) < Ms(1))
+        self.assertFalse(Ms(0) > Ms(1))
+
+    def test_add(self):
+        self.assertEqual(Ms(0) + Ms(1), Ms(1))
+        self.assertEqual(Ms(0) + 1, Ms(1))
+
+    def test_sub(self):
+        self.assertEqual(Ms(5) - Ms(1), Ms(4))
+        self.assertEqual(Ms(5) - 1, Ms(4))
+
+    def test_mul(self):
+        self.assertEqual(Ms(0) * Ms(2), Ms(0))
+        self.assertEqual(Ms(0) * 2, Ms(0))
+        self.assertEqual(Ms(0) * 0, Ms(0))
+        self.assertEqual(Ms(2) * Ms(2), Ms(4))
+        self.assertEqual(Ms(2) * 2, Ms(4))
+
     def test_format(self):
         test = [
             (Ms(0), "0.000"),

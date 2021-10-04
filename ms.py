@@ -16,6 +16,39 @@ class Ms:
         else:
             return False
 
+    def __lt__(self, other) -> bool:
+        if isinstance(other, Ms):
+            return self.value < other.value
+        else:
+            return False
+
+    def __str__(self) -> str:
+        return self.format()
+
+    def __add__(self, other):
+        if isinstance(other, Ms):
+            return Ms(self.value + other.value)
+        elif isinstance(other, int):
+            return Ms(self.value + other)
+        else:
+            return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, Ms):
+            return Ms(self.value - other.value)
+        elif isinstance(other, int):
+            return Ms(self.value - other)
+        else:
+            return NotImplemented
+
+    def __mul__(self, other):
+        if isinstance(other, Ms):
+            return Ms(self.value * other.value)
+        elif isinstance(other, int):
+            return Ms(self.value * other)
+        else:
+            return NotImplemented
+
     def format(self) -> str:
         """Format the milliseconds to a string (e.g. 1:04.090)."""
 
@@ -32,8 +65,9 @@ class Ms:
             return f"{sec}.{ms:03}"
 
 
-# function that transform string (e. g. 1:04.090) to Ms class
 def str_to_ms(time_str: str) -> Ms:
+    """Transform a string (e. g. 1:04.090) to a Ms class."""
+
     result = 0
 
     if "." not in time_str:
