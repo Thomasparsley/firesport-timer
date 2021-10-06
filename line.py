@@ -10,44 +10,37 @@ class Line:
     def __str__(self):
         return str(self.time) + " " + str(self.status)
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, Line):
+            return self.time == o.time and self.status == o.status
+
     def set_default(self):
-        self.time = ms.Ms(0)
+        self.time = ms.new()
         self.status = status.get_status_by_id(status.DEFAULT_ID)
 
     def is_zero(self) -> bool:
-        return self.time.value == 0
+        return self.time.is_zero()
 
     def format_time(self) -> str:
         """
-        Formats a time in milliseconds into a 1:02.03 format
+        Formats a time in milliseconds into a 1:02.030 format
         """
-        ms = int(str(self.time.microsecond)[:2])
-        return "{}:{:02d}.{:02d}".format(self.time.minute, self.time.second, ms)
+        return self.time.format()
 
 
 def new() -> Line:
-    return Line(ms.Ms(0), status.get_status_by_id(status.DEFAULT_ID))
+    return Line(ms.new(), status.get_status_by_id(status.DEFAULT_ID))
 
 
 def parse(raw_time: str, raw_id: str) -> Line:
-    milisecons = (int(raw_time) % 1000) * 1000
-    seconds = (int(raw_time) // 1000) % 60
-    minutes = (int(raw_time) // 1000 // 60) % 60
-    hours = (int(raw_time) // 1000 // 60 // 60) % 24
-
-    line_time = datetime(1, 1, 1, hours, minutes, seconds, milisecons)
+    line_time = ms.new(int(raw_time))
     line_status = status.parse_raw_status(raw_id)
 
     return Line(line_time, line_status)
 
 
 def parse_countdown(raw_time: str) -> Line:
-    milisecons = (int(raw_time) % 1000) * 1000
-    seconds = (int(raw_time) // 1000) % 60
-    minutes = (int(raw_time) // 1000 // 60) % 60
-    hours = (int(raw_time) // 1000 // 60 // 60) % 24
-
-    line_time = datetime(1, 1, 1, hours, minutes, seconds, milisecons)
+    line_time = ms.new(int(raw_time))
     result = Line(line_time, status.get_status_by_id(status.UNDEFINED_ID))
 
     if result.is_zero():

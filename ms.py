@@ -27,25 +27,25 @@ class Ms:
 
     def __add__(self, other):
         if isinstance(other, Ms):
-            return Ms(self.value + other.value)
+            return new(self.value + other.value)
         elif isinstance(other, int):
-            return Ms(self.value + other)
+            return new(self.value + other)
         else:
             return NotImplemented
 
     def __sub__(self, other):
         if isinstance(other, Ms):
-            return Ms(self.value - other.value)
+            return new(self.value - other.value)
         elif isinstance(other, int):
-            return Ms(self.value - other)
+            return new(self.value - other)
         else:
             return NotImplemented
 
     def __mul__(self, other):
         if isinstance(other, Ms):
-            return Ms(self.value * other.value)
+            return new(self.value * other.value)
         elif isinstance(other, int):
-            return Ms(self.value * other)
+            return new(self.value * other)
         else:
             return NotImplemented
 
@@ -64,6 +64,13 @@ class Ms:
         else:
             return f"{sec}.{ms:03}"
 
+    def is_zero(self) -> bool:
+        return self.value == 0
+
+
+def new(value=0) -> Ms:
+    return Ms(value)
+
 
 def str_to_ms(time_str: str) -> Ms:
     """Transform a string (e. g. 1:04.090) to a Ms class."""
@@ -71,7 +78,7 @@ def str_to_ms(time_str: str) -> Ms:
     result = 0
 
     if "." not in time_str:
-        return Ms(int(time_str))
+        return new(int(time_str))
 
     if ":" in time_str:
         min, sec_ms = time_str.split(":")
@@ -85,4 +92,4 @@ def str_to_ms(time_str: str) -> Ms:
     result += int(sec) * SEC
     result += int(ms) % MS_LIMIT
 
-    return Ms(result)
+    return new(result)

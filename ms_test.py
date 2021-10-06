@@ -1,58 +1,77 @@
 import unittest
 
-from ms import *
+import ms
 
 
 class TestMs(unittest.TestCase):
-    def test_lt(self):
-        self.assertTrue(Ms(0) < Ms(1))
-        self.assertFalse(Ms(0) > Ms(1))
-
-    def test_add(self):
-        self.assertEqual(Ms(0) + Ms(1), Ms(1))
-        self.assertEqual(Ms(0) + 1, Ms(1))
-
-    def test_sub(self):
-        self.assertEqual(Ms(5) - Ms(1), Ms(4))
-        self.assertEqual(Ms(5) - 1, Ms(4))
-
-    def test_mul(self):
-        self.assertEqual(Ms(0) * Ms(2), Ms(0))
-        self.assertEqual(Ms(0) * 2, Ms(0))
-        self.assertEqual(Ms(0) * 0, Ms(0))
-        self.assertEqual(Ms(2) * Ms(2), Ms(4))
-        self.assertEqual(Ms(2) * 2, Ms(4))
-
-    def test_format(self):
-        test = [
-            (Ms(0), "0.000"),
-            (Ms(6), "0.006"),
-            (Ms(60), "0.060"),
-            (Ms(600), "0.600"),
-            (Ms(6000), "6.000"),
-            (Ms(14000), "14.000"),
-            (Ms(48248), "48.248"),
-            (Ms(60000), "1:00.000"),
-            (Ms(120000), "2:00.000"),
-            (Ms(144567), "2:24.567"),
+    def test_new(self):
+        tests = [
+            (ms.new(), ms.Ms(0)),
+            (ms.new(1), ms.Ms(1))
         ]
 
-        for input, expected in test:
+        for input, expected in tests:
+            self.assertEqual(input, expected)
+
+    def test_lt(self):
+        self.assertTrue(ms.new() < ms.new(1))
+        self.assertFalse(ms.new() > ms.new(1))
+
+    def test_add(self):
+        self.assertEqual(ms.new() + ms.new(1), ms.new(1))
+        self.assertEqual(ms.new() + 1, ms.new(1))
+
+    def test_sub(self):
+        self.assertEqual(ms.new(5) - ms.new(1), ms.new(4))
+        self.assertEqual(ms.new(5) - 1, ms.new(4))
+
+    def test_mul(self):
+        self.assertEqual(ms.new() * ms.new(2), ms.new())
+        self.assertEqual(ms.new() * 2, ms.new())
+        self.assertEqual(ms.new() * 0, ms.new())
+        self.assertEqual(ms.new(2) * ms.new(2), ms.new(4))
+        self.assertEqual(ms.new(2) * 2, ms.new(4))
+
+    def test_format(self):
+        tests = [
+            (ms.new(0), "0.000"),
+            (ms.new(6), "0.006"),
+            (ms.new(60), "0.060"),
+            (ms.new(600), "0.600"),
+            (ms.new(6000), "6.000"),
+            (ms.new(14000), "14.000"),
+            (ms.new(48248), "48.248"),
+            (ms.new(60000), "1:00.000"),
+            (ms.new(120000), "2:00.000"),
+            (ms.new(144567), "2:24.567"),
+        ]
+
+        for input, expected in tests:
             self.assertEqual(input.format(), expected)
 
     def test_str_to_ms(self):
-        test = [
-            ("0", Ms(0)),
-            ("0.000", Ms(0)),
-            ("6", Ms(6)),
-            ("249", Ms(249)),
-            ("6.000", Ms(6000)),
-            ("14.000", Ms(14000)),
-            ("48.248", Ms(48248)),
-            ("1:00.000", Ms(60000)),
-            ("2:00.000", Ms(120000)),
-            ("2:24.567", Ms(144567)),
+        tests = [
+            ("0", ms.new(0)),
+            ("0.000", ms.new(0)),
+            ("6", ms.new(6)),
+            ("249", ms.new(249)),
+            ("6.000", ms.new(6000)),
+            ("14.000", ms.new(14000)),
+            ("48.248", ms.new(48248)),
+            ("1:00.000", ms.new(60000)),
+            ("2:00.000", ms.new(120000)),
+            ("2:24.567", ms.new(144567)),
         ]
 
-        for input, expected in test:
-            self.assertEqual(str_to_ms(input), expected)
+        for input, expected in tests:
+            self.assertEqual(ms.str_to_ms(input), expected)
+
+    def test_is_zero(self):
+        tests = [
+            (ms.new(0), True),
+            (ms.new(1), False)
+        ]
+
+        for input, expected in tests:
+            if isinstance(input, ms.Ms):
+                self.assertEqual(input.is_zero(), expected)
