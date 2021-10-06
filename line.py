@@ -8,7 +8,7 @@ class Line:
         self.status = status
 
     def __str__(self):
-        return str(self.time) + " " + str(self.status)
+        return f"time: {str(self.time):9} | status: {str(self.status)}"
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Line):

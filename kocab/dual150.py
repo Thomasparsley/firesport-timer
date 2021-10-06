@@ -31,15 +31,13 @@ class Dual150:
         self.line_four = line_four
 
     def __str__(self) -> str:
-        return """Dual150 (
-        countdown={};
-        line_one={};
-        line_two={};
-        line_three={};
-        line_four={}
-        )""".format(
-            self.countdown, self.line_one, self.line_two, self.line_three, self.line_four
-        )
+        return f"""Dual150 (
+    countdown  = {str(self.countdown)};
+    line_one   = {str(self.line_one)};
+    line_two   = {str(self.line_two)};
+    line_three = {str(self.line_three)};
+    line_four  = {str(self.line_four)}
+)"""
 
 
 def new() -> Dual150:
