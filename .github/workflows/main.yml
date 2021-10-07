@@ -15,7 +15,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-     - name: Install dependencies
-       run: pip install -r requirements.txt 
-     - name: Run Test
-       run: python -m unittest discover tests
+      - name: Install dependencies
+        run: pip install -r requirements.txt 
+      - name: Run Test
+        run: python -m unittest discover tests
+      - name: Python Linter
+        uses: sunnysid3up/python-linter@v0.1-beta.7
+        with:
+          source: .
+          strict: high
