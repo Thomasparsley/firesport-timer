@@ -1,7 +1,3 @@
-.vscode
-tmp
-
-
-
-go.sum
-firesport-timer.exe
+venv
+__pycache__
+*.pyc
