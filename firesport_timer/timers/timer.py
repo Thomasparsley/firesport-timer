@@ -1,10 +1,8 @@
-from abc import ABC, abstractmethod
 
 
-class Timer(ABC):
-    name: str
-    is_open: bool
+class Timer:
+    name: str = ""
+    is_open: bool = False
 
-    @abstractmethod
     def make_gui(self):
         pass
