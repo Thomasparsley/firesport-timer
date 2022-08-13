@@ -1,4 +1,5 @@
 from typing import Final
+""" import random """
 
 import serial  # type: ignore
 
@@ -122,3 +123,12 @@ class KocabTimer(Timer):
     def update_timer(self):
         if self.serial and self.serial.is_open:
             self.send_read_data()
+        else:
+            """ choise = random.choice([
+                "2:0:1:0:1:0:1:0:1:0:0:0:0:1",
+                "2:0:4:6270:2:6270:2:0:1:0:0:0:0:2",
+                "2:0:8:32010:8:29470:8:0:1:0:0:0:0:8",
+                "2:0:4:5390:8:18070:2:0:1:0:0:0:0:2",
+                "2:300000:1:0:1:0:1:0:1:0:0:0:0:1",
+            ])
+            self.apply_raw_data(choise) """

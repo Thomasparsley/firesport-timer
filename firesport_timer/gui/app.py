@@ -37,8 +37,9 @@ class App:
 
     def __create_menu(self):
         with dpg.viewport_menu_bar():  # type: ignore
-            dpg.add_menu_item(label="Časomíra", callback=self.open_timer)  # type: ignore
-            dpg.add_menu_item(label="Nastavení", callback=self.settings.open)  # type: ignore
+            dpg.add_menu_item(label="Casomira", callback=self.open_timer)  # type: ignore
+            dpg.add_menu_item(label="Nastaveni", callback=self.settings.open)  # type: ignore
+            dpg.add_menu_item(label="Pismo", callback=dpg.show_font_manager)  # type: ignore
 
     def __render_loop(self):
         timekeeper = datetime.now()

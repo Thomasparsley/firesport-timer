@@ -20,11 +20,11 @@ class Settings:
 
     def open_timer(self) -> None:
         if self.timer and not self.timer.is_open:
-            #self.timer.add_serial(self.serial_port)
+            self.timer.add_serial(self.serial_port)
             self.timer.make_gui()
 
     def set_setting_callback(self):
-        self.serial_port: str = dpg.get_value("serial_port_input")  # type: ignore
+        self.serial_port: str = dpg.get_value(self.serial_port_input)  # type: ignore
 
     def __draw_gui(self) -> None:
         with dpg.window(  # type: ignore
@@ -44,10 +44,13 @@ class Settings:
             dpg.add_listbox(items=timers, label="Typ časomíry")  # type: ignore
             """
 
-            dpg.add_input_text(label="port", tag="serial_port_input")  # type: ignore
+            self.serial_port_input = dpg.add_input_text(label="port")  # type: ignore
             dpg.add_separator(indent=32)  # type: ignore
 
-            dpg.add_button(label="Nastavit")  # type: ignore
+            dpg.add_button( # type: ignore
+                label="Nastavit",
+                callback=self.set_setting_callback,
+            )
 
     def __close(self):
         self.is_open = False
