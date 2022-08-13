@@ -7,7 +7,7 @@ from timers.timer_dual150 import Dual150Timer
 
 
 class Settings:
-    __slots__ = ["is_open", "timer", "serial_port"]
+    __slots__ = ["is_open", "timer", "serial_port", "serial_port_input"]
 
     def __init__(self) -> None:
         self.is_open = False

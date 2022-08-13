@@ -1,8 +1,11 @@
-# Requires:
+## Requires:
 
--   Chrome/Chromium >= 70 to be installed
 -   [Virtual COM Port Drivers](https://ftdichip.com/drivers/vcp-drivers/)
 
-# Official support for stopwatches:
+## Official support for stopwatches:
 
 -   Dual150
+
+## Bundle script?
+
+`pyinstaller --paths=.\firesport_timer --paths=.\firesport_timer\gui --paths=.\firesport_timer\timers -F .\firesport_timer\main.py`
