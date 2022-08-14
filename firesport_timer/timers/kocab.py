@@ -46,6 +46,15 @@ class KocabTimer(Timer):
         self.line_three = line_three
         self.line_four = line_four
 
+    def __repr__(self) -> str:
+        return f"""TRV Kocab (
+    countdown  = {str(self.countdown)};
+    line_one   = {str(self.line_one)};
+    line_two   = {str(self.line_two)};
+    line_three = {str(self.line_three)};
+    line_four  = {str(self.line_four)};
+)"""
+
     @classmethod
     def with_default_state(cls):
         return cls(
@@ -63,7 +72,7 @@ class KocabTimer(Timer):
         return timer
 
     def apply_raw_bytes_data(self, raw_data: bytes):
-        self.apply_raw_data(str(raw_data))
+        self.apply_raw_data(raw_data.decode("utf-8"))
 
     def apply_raw_data(self, raw_data: str):
         if len(raw_data) < MINIMAL_LEN_OF_DATA:
@@ -108,17 +117,21 @@ class KocabTimer(Timer):
             port, 115200, timeout=0.1, bytesize=serial.EIGHTBITS
         )
 
+    def send_bytes(self, command: str):
+        if self.serial and self.serial.is_open:
+            command = command + "\n"
+            self.serial.write( # type: ignore
+                bytes(command, "utf-8"))
+
     def send_reset(self):
         if self.serial and self.serial.is_open:
-            command = RESET_COMMAND + "\n"
-            self.serial.write(bytes(command, "utf-8"))  # type: ignore
+            self.send_bytes(RESET_COMMAND)
+            self.serial.readline()
 
     def send_read_data(self):
         if self.serial and self.serial.is_open:
-            command = READ_COMMAND + "\n"
-            self.serial.write(bytes(command, "utf-8"))  # type: ignore
-            raw = self.serial.readline()
-            self.apply_raw_bytes_data(raw)
+            self.send_bytes(READ_COMMAND)
+            self.apply_raw_bytes_data(self.serial.readline())
 
     def update_timer(self):
         if self.serial and self.serial.is_open:

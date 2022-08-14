@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg  # type: ignore
 
 # from ..timers.timer import Timer
-from timers.timer_dual150 import Dual150Timer
+from timers.kocab_dual150 import Dual150Timer
 
 # from timers.timers import Timers
 

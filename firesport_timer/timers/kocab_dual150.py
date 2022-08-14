@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg  # type: ignore
 
-from .timer_kocab import KocabTimer
+from .kocab import KocabTimer
 
 
 class Dual150Timer(KocabTimer):
@@ -12,6 +12,12 @@ class Dual150Timer(KocabTimer):
                 return
             else:
                 self.is_open = True
+            
+            with dpg.group(): # type: ignore
+                dpg.add_text("Odpocet:")  # type: ignore
+                self.gui_countdown_text = dpg.add_text(str(self.countdown))  # type: ignore
+
+            dpg.add_separator() # type: ignore
 
             with dpg.group(horizontal=True): # type: ignore
                 with dpg.group(): # type: ignore
@@ -21,12 +27,6 @@ class Dual150Timer(KocabTimer):
                 with dpg.group(): # type: ignore
                     dpg.add_text("Pravy terc:")  # type: ignore
                     self.gui_right_text = dpg.add_text(str(self.line_two))  # type: ignore
-
-            dpg.add_separator() # type: ignore
-            
-            with dpg.group(): # type: ignore
-                dpg.add_text("Odpocet:")  # type: ignore
-                self.gui_countdown_text = dpg.add_text(str(self.countdown))  # type: ignore
 
             dpg.add_separator() # type: ignore
             dpg.add_button( # type: ignore
