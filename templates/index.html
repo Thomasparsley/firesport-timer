@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Živý přenos časomíry</title>
+
+    {{ livereload | safe }}
+
+    <script src="https://unpkg.com/htmx.org@1.8.0"></script>
+    <script src="https://unpkg.com/htmx.org@1.8.0/dist/ext/sse.js"></script>
+</head>
+<body>
+    <style>
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            justify-content: center;
+            
+            font: Tahoma, Verdana, sans-serif;
+            font-size: 20px;
+
+            padding: 1rem 0.5rem;
+
+            border-width: 1px 1px 7px 1px;
+            border-style: solid;
+            border-color: #d3d4aa;
+            border-radius: 0.75rem;
+        }
+
+        .side {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side_text {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .side_time {
+            font-size: 3rem;
+        }
+
+        @media only screen and (min-width: 500px) {
+            main {
+                flex-direction: row;
+            }
+        }
+    </style>
+
+    <div
+        hx-get="/live_timer"
+        hx-target="this"
+        hx-swap="innerHTML"
+        hx-trigger="every 0.05s"
+    >
+        <main>
+            <div class="side">
+                <span class="side_text">
+                    Levý terč
+                </span>
+                <span class="side_time">
+                    {{ left_time }}
+                </span>
+            </div>
+
+            <div class="side">
+                <span class="side_text">
+                    Pravý terč
+                </span>
+                <span class="side_time">
+                    {{ right_time }}
+                </span>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
